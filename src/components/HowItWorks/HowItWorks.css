@@ -1,0 +1,54 @@
+.how {
+  background: var(--color-charcoal);
+  color: var(--color-cream);
+}
+
+.how .section__title {
+  color: var(--color-cream);
+}
+
+.how .section__eyebrow {
+  color: var(--color-fire);
+}
+
+.how__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+}
+
+.how__step {
+  padding: var(--space-5);
+  border: 1px solid rgba(255, 244, 226, 0.14);
+  border-radius: var(--radius-md);
+  background: rgba(255, 244, 226, 0.06);
+}
+
+.how__step span {
+  color: var(--color-fire);
+  font-weight: 900;
+}
+
+.how__step h3 {
+  margin: var(--space-5) 0 var(--space-3);
+  font-size: var(--text-lg);
+}
+
+.how__step p {
+  margin: 0;
+  color: rgba(255, 244, 226, 0.72);
+  line-height: 1.6;
+}
+
+@media screen and (max-width: 900px) {
+  .how__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media screen and (max-width: 560px) {
+  .how__grid {
+    grid-template-columns: 1fr;
+  }
+}

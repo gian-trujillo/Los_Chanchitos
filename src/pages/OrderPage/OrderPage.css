@@ -1,0 +1,197 @@
+.order-page {
+  padding-top: 56px;
+}
+
+.order-page__back {
+  display: inline-flex;
+  margin-bottom: var(--space-5);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-fire-dark);
+  font-weight: 900;
+}
+
+.order-page__header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: var(--space-6);
+  align-items: start;
+}
+
+.order-page__info {
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  background: var(--color-white);
+  box-shadow: var(--shadow-card);
+}
+
+.order-page__info h2 {
+  margin: var(--space-4) 0 var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+}
+
+.order-page__info p {
+  margin: 0;
+  color: var(--color-muted);
+  font-weight: 800;
+}
+
+.order-page__status {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin-top: var(--space-5);
+}
+
+.order-page__status > span {
+  flex: 0 0 auto;
+  width: 10px;
+  height: 10px;
+  margin-top: 0.45rem;
+  border-radius: 50%;
+}
+
+.order-page__status strong {
+  display: block;
+  font-weight: 900;
+}
+
+.order-page__status p {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+
+.order-page__status--open {
+  color: var(--color-green);
+}
+
+.order-page__status--open > span {
+  background: var(--color-green);
+}
+
+.order-page__status--closed {
+  color: var(--color-roasted);
+}
+
+.order-page__status--closed > span {
+  background: var(--color-roasted);
+}
+
+.order-page__category {
+  margin-top: var(--space-8);
+}
+
+.order-page__category h2 {
+  margin: 0 0 var(--space-5);
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+}
+
+.order-page__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-5);
+}
+
+.order-page__card {
+  overflow: hidden;
+  border: 2px solid transparent;
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.68);
+  box-shadow: var(--shadow-card);
+  transition: transform var(--transition-base), border-color var(--transition-base);
+}
+
+.order-page__card:hover {
+  transform: translateY(-5px);
+}
+
+.order-page__card--selected {
+  border-color: var(--color-fire);
+}
+
+.order-page__image-wrap {
+  height: 290px;
+  background: var(--color-cream-dark);
+}
+
+.order-page__image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.order-page__card-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 260px;
+  padding: var(--space-5);
+}
+
+.order-page__card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.order-page__selected-label {
+  color: var(--color-green);
+  font-size: var(--text-xs);
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.order-page__card h3 {
+  margin: var(--space-5) 0 var(--space-3);
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  line-height: 1;
+}
+
+.order-page__card p {
+  margin: 0;
+  color: var(--color-muted);
+  line-height: 1.6;
+}
+
+.order-page__bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: auto;
+  padding-top: var(--space-5);
+}
+
+.order-page__bottom strong {
+  font-size: var(--text-md);
+}
+
+@media screen and (max-width: 960px) {
+  .order-page__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .order-page__header {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media screen and (max-width: 620px) {
+  .order-page__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .order-page__bottom {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .order-page__bottom .button {
+    width: 100%;
+  }
+}
