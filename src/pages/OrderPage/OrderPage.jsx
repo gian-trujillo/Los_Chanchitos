@@ -1,9 +1,16 @@
+import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import "./OrderPage.css";
 
-function OrderPage({ menuItems, restaurantStatus, onBackHome, onAddToCart }) {
+function OrderPage({
+  menuItems,
+  restaurantStatus,
+  onBackHome,
+  onAddToCart,
+}) {
   const [searchParams] = useSearchParams();
   const selectedMenuItemId = searchParams.get("item");
+  const [selectedOptions, setSelectedOptions] = useState({});
 
   const categories = [
     "Individuales",
@@ -16,6 +23,32 @@ function OrderPage({ menuItems, restaurantStatus, onBackHome, onAddToCart }) {
 
   const formatPrice = (price) => {
     return typeof price === "number" ? `$${price} MXN` : price;
+  };
+
+  const handleOptionChange = (itemId, optionId) => {
+    setSelectedOptions((currentOptions) => ({
+      ...currentOptions,
+      [itemId]: optionId,
+    }));
+  };
+
+  const handleAddItem = (item) => {
+    if (!item.options) {
+      onAddToCart(item);
+      return;
+    }
+
+    const selectedOptionId = selectedOptions[item.id];
+    const selectedOption = item.options.find(
+      (option) => option.id === selectedOptionId
+    );
+
+    if (!selectedOption) {
+      alert("Selecciona una opción antes de agregar este producto.");
+      return;
+    }
+
+    onAddToCart(item, selectedOption);
   };
 
   return (
@@ -40,12 +73,18 @@ function OrderPage({ menuItems, restaurantStatus, onBackHome, onAddToCart }) {
             <h2>12:00 PM - 5:00 PM</h2>
             <p>Cerrado los martes.</p>
 
-            <div className={`order-page__status ${restaurantStatus.isOpen ? "order-page__status--open" : "order-page__status--closed"}`}>
-                <span></span>
-                <div>
-                    <strong>{restaurantStatus.label}</strong>
-                    <p>{restaurantStatus.detail}</p>
-                </div>
+            <div
+              className={`order-page__status ${
+                restaurantStatus.isOpen
+                  ? "order-page__status--open"
+                  : "order-page__status--closed"
+              }`}
+            >
+              <span></span>
+              <div>
+                <strong>{restaurantStatus.label}</strong>
+                <p>{restaurantStatus.detail}</p>
+              </div>
             </div>
           </aside>
         </div>
@@ -81,22 +120,47 @@ function OrderPage({ menuItems, restaurantStatus, onBackHome, onAddToCart }) {
                       <div className="order-page__card-content">
                         <div className="order-page__card-top">
                           <span className="badge">{item.badge}</span>
-                          {/* {isSelected && (
+                          {isSelected && (
                             <span className="order-page__selected-label">
                               Seleccionado
                             </span>
-                          )} */}
+                          )}
                         </div>
 
                         <h3>{item.name}</h3>
                         <p>{item.description}</p>
+
+                        {item.options && (
+                          <div className="order-page__options">
+                            {item.options.map((option) => (
+                              <label
+                                className="order-page__option"
+                                key={option.id}
+                              >
+                                <input
+                                  type="radio"
+                                  name={`${item.id}-option`}
+                                  value={option.id}
+                                  checked={
+                                    selectedOptions[item.id] === option.id
+                                  }
+                                  onChange={() =>
+                                    handleOptionChange(item.id, option.id)
+                                  }
+                                />
+                                <span>{option.name}</span>
+                                <strong>${option.price} MXN</strong>
+                              </label>
+                            ))}
+                          </div>
+                        )}
 
                         <div className="order-page__bottom">
                           <strong>{formatPrice(item.price)}</strong>
                           <button
                             className="button button--primary"
                             type="button"
-                            onClick={() => onAddToCart(item)}
+                            onClick={() => handleAddItem(item)}
                           >
                             Agregar
                           </button>

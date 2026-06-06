@@ -36,7 +36,14 @@ function MenuPreview({ menuItems, onOrderClick, onAddToCart }) {
                   <button
                     className="button button--secondary"
                     type="button"
-                    onClick={() => onAddToCart(item)}
+                    onClick={() => {
+                      if (item.options) {
+                        onOrderClick(item.id);
+                        return;
+                      }
+
+                      onAddToCart(item);
+                    }}
                   >
                     Agregar
                   </button>

@@ -128,6 +128,18 @@ function App() {
       image: "/images/products/arroz.jpg",
       description: "Disponible en presentación chica o grande.",
       badge: "Complemento",
+      options: [
+        {
+          id: "arroz-chico",
+          name: "Chico",
+          price: 20,
+        },
+        {
+          id: "arroz-grande",
+          name: "Grande",
+          price: 40,
+        },
+      ],
     },
     {
       id: "frijoles",
@@ -137,6 +149,18 @@ function App() {
       image: "/images/products/frijoles.jpg",
       description: "Disponible en presentación chica o grande.",
       badge: "Complemento",
+      options: [
+        {
+          id: "frijoles-chicos",
+          name: "Chicos",
+          price: 20,
+        },
+        {
+          id: "frijoles-grandes",
+          name: "Grandes",
+          price: 40,
+        },
+      ],
     },
     {
       id: "cebolla-asada",
@@ -312,26 +336,42 @@ function App() {
 
   const restaurantStatus = getRestaurantStatus();
 
-  const handleAddToCart = (item) => {
-    if (typeof item.price !== "number") {
+  const handleAddToCart = (item, selectedOption = null) => {
+    if (item.options && !selectedOption) {
+      alert("Selecciona una opción antes de agregar este producto.");
+      return;
+    }
+
+    const cartItem = selectedOption
+      ? {
+          ...item,
+          id: selectedOption.id,
+          baseProductId: item.id,
+          name: `${item.name} ${selectedOption.name}`,
+          price: selectedOption.price,
+          selectedOption,
+        }
+      : item;
+
+    if (typeof cartItem.price !== "number") {
       alert("Este producto necesita selección de tamaño antes de agregarse.");
       return;
     }
 
     setCartItems((currentItems) => {
       const existingItem = currentItems.find(
-        (cartItem) => cartItem.id === item.id
+        (currentItem) => currentItem.id === cartItem.id
       );
 
       if (existingItem) {
-        return currentItems.map((cartItem) =>
-          cartItem.id === item.id
-            ? { ...cartItem, quantity: cartItem.quantity + 1 }
-            : cartItem
+        return currentItems.map((currentItem) =>
+          currentItem.id === cartItem.id
+            ? { ...currentItem, quantity: currentItem.quantity + 1 }
+            : currentItem
         );
       }
 
-      return [...currentItems, { ...item, quantity: 1 }];
+      return [...currentItems, { ...cartItem, quantity: 1 }];
     });
 
     setIsCartOpen(true);
