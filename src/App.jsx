@@ -7,10 +7,12 @@ import CartDrawer from "./components/CartDrawer/CartDrawer";
 import HomePage from "./pages/HomePage/HomePage";
 import OrderPage from "./pages/OrderPage/OrderPage";
 import CheckoutPage from "./pages/CheckoutPage/CheckoutPage";
+import OrderConfirmationPage from "./pages/OrderConfirmationPage/OrderConfirmationPage";
 
 function App() {
   const [cartItems, setCartItems] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [submittedOrder, setSubmittedOrder] = useState(null);
   const navigate = useNavigate();
 
   const featuredPackages = [
@@ -422,6 +424,38 @@ function App() {
     (item) => item.category === "Individuales" || item.category === "Paquetes"
   );
 
+  const generateOrderCode = () => {
+  const randomNumber = Math.floor(1000 + Math.random() * 9000);
+    return `LC-${randomNumber}`;
+  };
+
+  const handleSubmitOrder = (orderData) => {
+    const newOrder = {
+      id: generateOrderCode(),
+      status: "received",
+      statusLabel: "Pedido recibido",
+      createdAt: new Date().toISOString(),
+      items: cartItems,
+      total: cartTotal,
+      customer: {
+        name: orderData.name,
+        phone: orderData.phone,
+      },
+      pickup: {
+        type: orderData.pickupType,
+        time: orderData.pickupTime,
+      },
+      paymentMethod: orderData.paymentMethod,
+      details: orderData.details,
+    };
+
+    setSubmittedOrder(newOrder);
+    setCartItems([]);
+    setIsCartOpen(false);
+    navigate("/pedido-confirmado");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <div className="app">
       <Header
@@ -467,6 +501,18 @@ function App() {
               restaurantStatus={restaurantStatus}
               onBackToMenu={handleOpenOrderPage}
               onBackToCart={() => setIsCartOpen(true)}
+              onSubmitOrder={handleSubmitOrder}
+            />
+          }
+        />
+
+        <Route
+          path="/pedido-confirmado"
+          element={
+            <OrderConfirmationPage
+              order={submittedOrder}
+              onBackToMenu={handleOpenOrderPage}
+              onBackHome={handleNavigateHome}
             />
           }
         />

@@ -8,6 +8,7 @@ function CheckoutPage({
   restaurantStatus,
   onBackToMenu,
   onBackToCart,
+  onSubmitOrder,
 }) {
     const [formValues, setFormValues] = useState({
         name: "",
@@ -66,10 +67,10 @@ function CheckoutPage({
         event.preventDefault();
 
         if (!canSubmit) {
-        return;
+            return;
         }
 
-        alert("Más adelante conectaremos este formulario al backend.");
+        onSubmitOrder(formValues);
     };
 
     return (
