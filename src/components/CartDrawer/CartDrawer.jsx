@@ -10,6 +10,7 @@ function CartDrawer({
   onIncreaseQuantity,
   onDecreaseQuantity,
   onRemoveFromCart,
+  onCheckout,
 }) {
     return (
         <aside className={`cart ${isOpen ? "cart--open" : ""}`}>
@@ -98,6 +99,7 @@ function CartDrawer({
                                 className="button button--primary cart__checkout"
                                 type="button"
                                 disabled={!hasMainItem}
+                                onClick={onCheckout}
                             >
                                 Continuar
                             </button>

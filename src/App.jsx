@@ -6,6 +6,7 @@ import Footer from "./components/Footer/Footer";
 import CartDrawer from "./components/CartDrawer/CartDrawer";
 import HomePage from "./pages/HomePage/HomePage";
 import OrderPage from "./pages/OrderPage/OrderPage";
+import CheckoutPage from "./pages/CheckoutPage/CheckoutPage";
 
 function App() {
   const [cartItems, setCartItems] = useState([]);
@@ -401,6 +402,12 @@ function App() {
     );
   };
 
+  const handleOpenCheckout = () => {
+    setIsCartOpen(false);
+    navigate("/checkout");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const cartTotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
     0
@@ -449,6 +456,20 @@ function App() {
             />
           }
         />
+
+        <Route
+          path="/checkout"
+          element={
+            <CheckoutPage
+              cartItems={cartItems}
+              cartTotal={cartTotal}
+              hasMainItem={hasMainItem}
+              restaurantStatus={restaurantStatus}
+              onBackToMenu={handleOpenOrderPage}
+              onBackToCart={() => setIsCartOpen(true)}
+            />
+          }
+        />
       </Routes>
 
       <Footer
@@ -466,6 +487,7 @@ function App() {
         onIncreaseQuantity={handleIncreaseQuantity}
         onDecreaseQuantity={handleDecreaseQuantity}
         onRemoveFromCart={handleRemoveFromCart}
+        onCheckout={handleOpenCheckout}
       />
     </div>
   );
