@@ -1,6 +1,6 @@
 import "./FeaturedPackages.css";
 
-function FeaturedPackages({ packages, onOrderClick }) {
+function FeaturedPackages({ packages, onAddToCart }) {
   return (
     <section className="featured section" id="paquetes">
       <div className="section__inner">
@@ -31,7 +31,7 @@ function FeaturedPackages({ packages, onOrderClick }) {
                   <button
                     className="button button--fire"
                     type="button"
-                    onClick={() => onOrderClick(item.id)}
+                    onClick={() => onAddToCart(item)}
                   >
                     Agregar
                   </button>

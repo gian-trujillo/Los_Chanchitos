@@ -1,6 +1,6 @@
 import "./Header.css";
 
-function Header({ onNavigateHome, onOrderClick }) {
+function Header({ cartCount, onNavigateHome, onOrderClick, onCartClick }) {
   return (
     <header className="header">
       <div className="header__inner">
@@ -35,13 +35,25 @@ function Header({ onNavigateHome, onOrderClick }) {
           </button>
         </nav>
 
-        <button
-          className="button button--primary header__cta"
-          type="button"
-          onClick={() => onOrderClick()}
-        >
-          Ordenar ahora
-        </button>
+        <div className="header__actions">
+          <button
+            className="header__cart"
+            type="button"
+            onClick={onCartClick}
+            aria-label="Abrir carrito"
+          >
+            Carrito
+            {cartCount > 0 && <span>{cartCount}</span>}
+          </button>
+
+          <button
+            className="button button--primary header__cta"
+            type="button"
+            onClick={() => onOrderClick()}
+          >
+            Ordenar ahora
+          </button>
+        </div>
       </div>
     </header>
   );

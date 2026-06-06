@@ -1,6 +1,6 @@
 import "./MenuPreview.css";
 
-function MenuPreview({ menuItems, onOrderClick }) {
+function MenuPreview({ menuItems, onOrderClick, onAddToCart }) {
   const formatPrice = (price) => {
     return typeof price === "number" ? `$${price} MXN` : price;
   };
@@ -36,7 +36,7 @@ function MenuPreview({ menuItems, onOrderClick }) {
                   <button
                     className="button button--secondary"
                     type="button"
-                    onClick={() => onOrderClick(item.id)}
+                    onClick={() => onAddToCart(item)}
                   >
                     Agregar
                   </button>

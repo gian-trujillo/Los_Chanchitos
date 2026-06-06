@@ -1,11 +1,15 @@
+import { useState } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import "./App.css";
 import Header from "./components/Header/Header";
 import Footer from "./components/Footer/Footer";
+import CartDrawer from "./components/CartDrawer/CartDrawer";
 import HomePage from "./pages/HomePage/HomePage";
 import OrderPage from "./pages/OrderPage/OrderPage";
 
 function App() {
+  const [cartItems, setCartItems] = useState([]);
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const navigate = useNavigate();
 
   const featuredPackages = [
@@ -308,9 +312,77 @@ function App() {
 
   const restaurantStatus = getRestaurantStatus();
 
+  const handleAddToCart = (item) => {
+    if (typeof item.price !== "number") {
+      alert("Este producto necesita selección de tamaño antes de agregarse.");
+      return;
+    }
+
+    setCartItems((currentItems) => {
+      const existingItem = currentItems.find(
+        (cartItem) => cartItem.id === item.id
+      );
+
+      if (existingItem) {
+        return currentItems.map((cartItem) =>
+          cartItem.id === item.id
+            ? { ...cartItem, quantity: cartItem.quantity + 1 }
+            : cartItem
+        );
+      }
+
+      return [...currentItems, { ...item, quantity: 1 }];
+    });
+
+    setIsCartOpen(true);
+  };
+
+  const handleIncreaseQuantity = (itemId) => {
+    setCartItems((currentItems) =>
+      currentItems.map((item) =>
+        item.id === itemId ? { ...item, quantity: item.quantity + 1 } : item
+      )
+    );
+  };
+
+  const handleDecreaseQuantity = (itemId) => {
+    setCartItems((currentItems) =>
+      currentItems
+        .map((item) =>
+          item.id === itemId ? { ...item, quantity: item.quantity - 1 } : item
+        )
+        .filter((item) => item.quantity > 0)
+    );
+  };
+
+  const handleRemoveFromCart = (itemId) => {
+    setCartItems((currentItems) =>
+      currentItems.filter((item) => item.id !== itemId)
+    );
+  };
+
+  const cartTotal = cartItems.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  );
+
+  const cartCount = cartItems.reduce(
+    (total, item) => total + item.quantity,
+    0
+  );
+
+  const hasMainItem = cartItems.some(
+    (item) => item.category === "Individuales" || item.category === "Paquetes"
+  );
+
   return (
     <div className="app">
-      <Header onNavigateHome={handleNavigateHome} onOrderClick={handleOpenOrderPage} />
+      <Header
+        cartCount={cartCount}
+        onNavigateHome={handleNavigateHome}
+        onOrderClick={handleOpenOrderPage}
+        onCartClick={() => setIsCartOpen(true)}
+      />
 
       <Routes>
         <Route
@@ -321,6 +393,7 @@ function App() {
               menuItems={menuItems}
               restaurantStatus={restaurantStatus}
               onOrderClick={handleOpenOrderPage}
+              onAddToCart={handleAddToCart}
             />
           }
         />
@@ -332,12 +405,28 @@ function App() {
               menuItems={menuItems}
               restaurantStatus={restaurantStatus}
               onBackHome={handleNavigateHome}
+              onAddToCart={handleAddToCart}
             />
           }
         />
       </Routes>
 
-      <Footer onNavigateHome={handleNavigateHome} onOrderClick={handleOpenOrderPage} />
+      <Footer
+        onNavigateHome={handleNavigateHome}
+        onOrderClick={handleOpenOrderPage}
+      />
+
+      <CartDrawer
+        cartItems={cartItems}
+        cartTotal={cartTotal}
+        cartCount={cartCount}
+        hasMainItem={hasMainItem}
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
+        onIncreaseQuantity={handleIncreaseQuantity}
+        onDecreaseQuantity={handleDecreaseQuantity}
+        onRemoveFromCart={handleRemoveFromCart}
+      />
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { useSearchParams } from "react-router-dom";
 import "./OrderPage.css";
 
-function OrderPage({ menuItems, restaurantStatus, onBackHome }) {
+function OrderPage({ menuItems, restaurantStatus, onBackHome, onAddToCart }) {
   const [searchParams] = useSearchParams();
   const selectedMenuItemId = searchParams.get("item");
 
@@ -93,7 +93,11 @@ function OrderPage({ menuItems, restaurantStatus, onBackHome }) {
 
                         <div className="order-page__bottom">
                           <strong>{formatPrice(item.price)}</strong>
-                          <button className="button button--primary" type="button">
+                          <button
+                            className="button button--primary"
+                            type="button"
+                            onClick={() => onAddToCart(item)}
+                          >
                             Agregar
                           </button>
                         </div>

@@ -1,6 +1,6 @@
 import "./Hero.css";
 
-function Hero({ restaurantStatus, onOrderClick }) {
+function Hero({ restaurantStatus, onOrderClick, onAddToCart }) {
   return (
     <section className="hero section" id="inicio">
       <div className="hero__inner section__inner">
@@ -48,7 +48,18 @@ function Hero({ restaurantStatus, onOrderClick }) {
         <button
           className="hero__card"
           type="button"
-          onClick={() => onOrderClick("paquete-familiar-asado")}
+          onClick={() =>
+            onAddToCart({
+              id: "paquete-familiar-asado",
+              category: "Paquetes",
+              name: "Paquete Familiar Asado",
+              price: 589,
+              image: "/images/products/paquete-familiar-asado.jpg",
+              description:
+                "1 pollo asado, 1 kg sirloin, cebolla asada y salchicha.",
+              badge: "Recomendado",
+            })
+          }
           aria-label="Ordenar Paquete Familiar Asado"
         >
           <div className="hero__image-wrap">
