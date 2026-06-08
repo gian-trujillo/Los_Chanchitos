@@ -66,9 +66,9 @@ function CheckoutPage({
     const handleSubmit = (event) => {
         event.preventDefault();
 
-        if (!canSubmit) {
-            return;
-        }
+        // if (!canSubmit) {
+        //     return;
+        // }
 
         onSubmitOrder(formValues);
     };
@@ -241,7 +241,7 @@ function CheckoutPage({
                 <button
                 className="button button--primary checkout__submit"
                 type="submit"
-                disabled={!canSubmit}
+                // disabled={!canSubmit}
                 >
                     Confirmar pedido
                 </button>

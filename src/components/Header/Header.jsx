@@ -1,6 +1,6 @@
 import "./Header.css";
 
-function Header({ cartCount, onNavigateHome, onOrderClick, onCartClick }) {
+function Header({ cartCount, onNavigateHome, onOrderClick, onCartClick, onStatusClick }) {
   return (
     <header className="header">
       <div className="header__inner">
@@ -30,7 +30,7 @@ function Header({ cartCount, onNavigateHome, onOrderClick, onCartClick }) {
           <a className="header__link" href="#ubicacion">
             Ubicación
           </a>
-          <button className="header__link" type="button">
+          <button className="header__link" type="button" onClick={onStatusClick}>
             Consultar pedido
           </button>
         </nav>

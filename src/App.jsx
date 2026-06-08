@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import "./App.css";
+import { saveOrderToStorage } from "./utils/orderStorage";
 import Header from "./components/Header/Header";
 import Footer from "./components/Footer/Footer";
 import CartDrawer from "./components/CartDrawer/CartDrawer";
@@ -8,6 +9,7 @@ import HomePage from "./pages/HomePage/HomePage";
 import OrderPage from "./pages/OrderPage/OrderPage";
 import CheckoutPage from "./pages/CheckoutPage/CheckoutPage";
 import OrderConfirmationPage from "./pages/OrderConfirmationPage/OrderConfirmationPage";
+import OrderStatusPage from "./pages/OrderStatusPage/OrderStatusPage";
 
 function App() {
   const [cartItems, setCartItems] = useState([]);
@@ -380,6 +382,12 @@ function App() {
     setIsCartOpen(true);
   };
 
+  const handleAddToCartAndOpenMenu = (item, selectedOption = null) => {
+    handleAddToCart(item, selectedOption);
+    navigate("/ordenar");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const handleIncreaseQuantity = (itemId) => {
     setCartItems((currentItems) =>
       currentItems.map((item) =>
@@ -450,9 +458,15 @@ function App() {
     };
 
     setSubmittedOrder(newOrder);
+    saveOrderToStorage(newOrder);
     setCartItems([]);
     setIsCartOpen(false);
     navigate("/pedido-confirmado");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleOpenStatusLookup = () => {
+    navigate("/consultar-pedido");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -463,6 +477,7 @@ function App() {
         onNavigateHome={handleNavigateHome}
         onOrderClick={handleOpenOrderPage}
         onCartClick={() => setIsCartOpen(true)}
+        onStatusClick={handleOpenStatusLookup}
       />
 
       <Routes>
@@ -474,7 +489,7 @@ function App() {
               menuItems={menuItems}
               restaurantStatus={restaurantStatus}
               onOrderClick={handleOpenOrderPage}
-              onAddToCart={handleAddToCart}
+              onAddToCart={handleAddToCartAndOpenMenu}
             />
           }
         />
@@ -516,11 +531,22 @@ function App() {
             />
           }
         />
+
+        <Route
+          path="/consultar-pedido"
+          element={
+            <OrderStatusPage
+              onBackHome={handleNavigateHome}
+              onBackToMenu={handleOpenOrderPage}
+            />
+          }
+        />
       </Routes>
 
       <Footer
         onNavigateHome={handleNavigateHome}
         onOrderClick={handleOpenOrderPage}
+        onStatusClick={handleOpenStatusLookup}
       />
 
       <CartDrawer

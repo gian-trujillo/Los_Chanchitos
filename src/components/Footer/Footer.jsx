@@ -1,6 +1,6 @@
 import "./Footer.css";
 
-function Footer({ onNavigateHome, onOrderClick }) {
+function Footer({ onNavigateHome, onOrderClick, onStatusClick }) {
   return (
     <footer className="footer">
       <div className="footer__inner">
@@ -15,6 +15,9 @@ function Footer({ onNavigateHome, onOrderClick }) {
           </button>
           <button type="button" onClick={onNavigateHome}>
             Inicio
+          </button>
+          <button type="button" onClick={onStatusClick}>
+            Consultar pedido
           </button>
           <a href="#ubicacion">Ubicación</a>
         </div>
