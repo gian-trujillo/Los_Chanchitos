@@ -10,6 +10,24 @@ export const featuredPackages = [
     image: "/images/products/paquete-medio-asado.jpg",
     description:
       "1/2 pollo asado, 1/2 kg de sirloin, media cebolla asada y 1 salchicha.",
+    inventoryUsage: [
+        {
+            inventoryId: "pollo-asado",
+            amount: 1,
+        },
+        {
+            inventoryId: "sirloin",
+            amount: 500,
+        },
+        {
+            inventoryId: "cebolla-asada",
+            amount: 1,
+        },
+        {
+            inventoryId: "salchicha",
+            amount: 1,
+        },
+    ],
   },
   
   {
@@ -23,6 +41,24 @@ export const featuredPackages = [
     image: "/images/products/paquete-medio-ataud.jpg",
     description:
       "1/2 pollo al ataúd, 1/2 kg de sirloin, media cebolla asada y 1 salchicha.",
+    inventoryUsage: [
+        {
+            inventoryId: "pollo-ataud",
+            amount: 1,
+        },
+        {
+            inventoryId: "sirloin",
+            amount: 500,
+        },
+        {
+            inventoryId: "cebolla-asada",
+            amount: 1,
+        },
+        {
+            inventoryId: "salchicha",
+            amount: 1,
+        },
+    ],
   },
   {
     id: "paquete-familiar-asado",
@@ -35,6 +71,24 @@ export const featuredPackages = [
     image: "/images/products/paquete-familiar-asado.jpg",
     description:
       "1 pollo asado, 1 kg de sirloin, 1 cebolla asada y 1 salchicha.",
+    inventoryUsage: [
+        {
+            inventoryId: "pollo-asado",
+            amount: 2,
+        },
+        {
+            inventoryId: "sirloin",
+            amount: 1000,
+        },
+        {
+            inventoryId: "cebolla-asada",
+            amount: 2,
+        },
+        {
+            inventoryId: "salchicha",
+            amount: 1,
+        },
+    ],
   },
   {
     id: "paquete-familiar-ataud",
@@ -47,6 +101,24 @@ export const featuredPackages = [
     image: "/images/products/paquete-familiar-ataud.jpg",
     description:
       "1 pollo al ataúd, 1 kg de sirloin, 1 cebolla asada y 1 salchicha.",
+    inventoryUsage: [
+        {
+            inventoryId: "pollo-ataud",
+            amount: 2,
+        },
+        {
+            inventoryId: "sirloin",
+            amount: 1000,
+        },
+        {
+            inventoryId: "cebolla-asada",
+            amount: 2,
+        },
+        {
+            inventoryId: "salchicha",
+            amount: 1,
+        },
+    ],
   },
 ];
 
@@ -60,6 +132,12 @@ export const menuItems = [
     description: "Pollo entero preparado al carbón.",
     badge: "Clásico",
     isAvailable: true,
+    inventoryUsage: [
+        {
+            inventoryId: "pollo-asado",
+            amount: 2,
+        },
+    ],
   },
   {
     id: "pollo-ataud",
@@ -70,6 +148,12 @@ export const menuItems = [
     description: "Pollo entero con preparación especial al ataúd.",
     badge: "Especial",
     isAvailable: true,
+    inventoryUsage: [
+        {
+            inventoryId: "pollo-ataud",
+            amount: 2,
+        },
+    ],
   },
   {
     id: "medio-pollo-asado",
@@ -80,6 +164,12 @@ export const menuItems = [
     description: "Media pieza de pollo asado al carbón.",
     badge: "Pedido mínimo",
     isAvailable: true,
+    inventoryUsage: [
+        {
+            inventoryId: "pollo-asado",
+            amount: 1,
+        },
+    ],
   },
   {
     id: "medio-pollo-ataud",
@@ -90,6 +180,12 @@ export const menuItems = [
     description: "Media pieza de pollo al ataúd.",
     badge: "Pedido mínimo",
     isAvailable: true,
+    inventoryUsage: [
+        {
+            inventoryId: "pollo-ataud",
+            amount: 1,
+        },
+    ],
   },
   {
     id: "sirloin-kg",
@@ -100,6 +196,12 @@ export const menuItems = [
     description: "Sirloin preparado al carbón, ideal para compartir.",
     badge: "Al carbón",
     isAvailable: true,
+    inventoryUsage: [
+        {
+            inventoryId: "sirloin",
+            amount: 1000,
+        },
+    ],
   },
   {
     id: "sirloin-medio-kg",
@@ -110,6 +212,12 @@ export const menuItems = [
     description: "Media porción de sirloin preparado al carbón.",
     badge: "Al carbón",
     isAvailable: true,
+    inventoryUsage: [
+        {
+            inventoryId: "sirloin",
+            amount: 500,
+        },
+    ],
   },
   ...featuredPackages,
   {
@@ -121,6 +229,12 @@ export const menuItems = [
     description: "Salchicha asada para acompañar tu pedido.",
     badge: "Complemento",
     isAvailable: true,
+    inventoryUsage: [
+    {
+        inventoryId: "salchicha",
+        amount: 1,
+    },
+    ],
   },
   {
     id: "arroz",
@@ -174,6 +288,12 @@ export const menuItems = [
     description: "Cebolla asada para acompañar pollo o sirloin.",
     badge: "Complemento",
     isAvailable: true,
+    inventoryUsage: [
+    {
+        inventoryId: "cebolla-asada",
+        amount: 2,
+    },
+    ],
   },
   {
     id: "papitas-picositas",
@@ -184,6 +304,12 @@ export const menuItems = [
     description: "Papitas con toque picosito.",
     badge: "Complemento",
     isAvailable: true,
+    inventoryUsage: [
+    {
+        inventoryId: "papitas-picositas",
+        amount: 1,
+    },
+    ],
   },
   {
     id: "totopos",
@@ -194,6 +320,12 @@ export const menuItems = [
     description: "Totopos crujientes para acompañar.",
     badge: "Complemento",
     isAvailable: true,
+    inventoryUsage: [
+    {
+        inventoryId: "totopos",
+        amount: 1,
+    },
+    ],
   },
   {
     id: "quesadilla-uno",
@@ -204,6 +336,12 @@ export const menuItems = [
     description: "Una quesadilla recién hecha.",
     badge: "Complemento",
     isAvailable: true,
+    inventoryUsage: [
+    {
+        inventoryId: "quesadillas",
+        amount: 1,
+    },
+    ],
   },
   {
     id: "quesadillas-cuatro",
@@ -214,6 +352,12 @@ export const menuItems = [
     description: "Orden de cuatro quesadillas.",
     badge: "Complemento",
     isAvailable: true,
+    inventoryUsage: [
+    {
+        inventoryId: "quesadillas",
+        amount: 4,
+    },
+    ],
   },
   {
     id: "coca-cola",

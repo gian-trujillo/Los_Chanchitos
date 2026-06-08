@@ -17,13 +17,30 @@ function FeaturedPackages({ packages, onAddToCart }) {
 
         <div className="featured__grid">
           {packages.map((item) => (
-            <article className="featured__card" key={item.id}>
+            <article
+              className={`featured__card ${
+                item.inventoryStatus?.isSoldOut ? "featured__card--sold-out" : ""
+              }`}
+              key={item.id}
+            >
               <div className="featured__image-wrap">
                 <img src={item.image} alt={item.name} />
               </div>
 
               <div className="featured__content">
                 <span className="badge">{item.badge}</span>
+
+                {item.inventoryStatus?.isLowStock && (
+                  <span className="featured__stock-badge">
+                    {item.inventoryStatus.lowStockLabel}
+                  </span>
+                )}
+
+                {item.inventoryStatus?.isSoldOut && (
+                  <span className="featured__stock-badge featured__stock-badge--sold-out">
+                    Agotado
+                  </span>
+                )}
                 <h3>{item.name}</h3>
                 <p>{item.description}</p>
                 <div className="featured__bottom">
@@ -31,9 +48,10 @@ function FeaturedPackages({ packages, onAddToCart }) {
                   <button
                     className="button button--fire"
                     type="button"
+                    disabled={item.inventoryStatus?.isSoldOut}
                     onClick={() => onAddToCart(item)}
                   >
-                    Agregar
+                    {item.inventoryStatus?.isSoldOut ? "Agotado" : "Agregar"}
                   </button>
                 </div>
               </div>

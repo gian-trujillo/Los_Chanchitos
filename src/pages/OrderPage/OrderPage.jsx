@@ -33,6 +33,11 @@ function OrderPage({
   };
 
   const handleAddItem = (item) => {
+    if (item.inventoryStatus?.isSoldOut) {
+      return;
+    }
+
+
     if (!item.options) {
       onAddToCart(item);
       return;
@@ -110,7 +115,7 @@ function OrderPage({
                     <article
                       className={`order-page__card ${
                         isSelected ? "order-page__card--selected" : ""
-                      }`}
+                      } ${item.inventoryStatus?.isSoldOut ? "order-page__card--sold-out" : ""}`}
                       key={item.id}
                     >
                       <div className="order-page__image-wrap">
@@ -123,6 +128,17 @@ function OrderPage({
                           {isSelected && (
                             <span className="order-page__selected-label">
                               Seleccionado
+                            </span>
+                          )}
+                          {item.inventoryStatus?.isLowStock && (
+                            <span className="order-page__stock-badge">
+                              {item.inventoryStatus.lowStockLabel}
+                            </span>
+                          )}
+
+                          {item.inventoryStatus?.isSoldOut && (
+                            <span className="order-page__stock-badge order-page__stock-badge--sold-out">
+                              Agotado
                             </span>
                           )}
                         </div>
@@ -160,9 +176,10 @@ function OrderPage({
                           <button
                             className="button button--primary"
                             type="button"
+                            disabled={item.inventoryStatus?.isSoldOut}
                             onClick={() => handleAddItem(item)}
                           >
-                            Agregar
+                            {item.inventoryStatus?.isSoldOut ? "Agotado" : "Agregar"}
                           </button>
                         </div>
                       </div>

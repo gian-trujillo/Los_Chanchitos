@@ -3,6 +3,7 @@ import { Routes, Route, useNavigate } from "react-router-dom";
 import "./App.css";
 import { saveOrderToStorage } from "./utils/orderStorage";
 import { featuredPackages as initialFeaturedPackages, menuItems as initialMenuItems } from "./data/menuData";
+import { addInventoryStatusToMenuItems } from "./utils/inventoryUtils";
 import Header from "./components/Header/Header";
 import Footer from "./components/Footer/Footer";
 import CartDrawer from "./components/CartDrawer/CartDrawer";
@@ -24,9 +25,16 @@ function App() {
   const [inventoryItems, setInventoryItems] = useState(initialInventoryItems);
   const navigate = useNavigate();
 
-  const availableMenuItems = menuItems.filter((item) => item.isAvailable !== false);
+  const inventoryAwareMenuItems = addInventoryStatusToMenuItems(
+    menuItems,
+    inventoryItems
+  );
 
-  const featuredPackages = availableMenuItems.filter(
+  const visibleMenuItems = inventoryAwareMenuItems.filter(
+    (item) => item.isAvailable !== false
+  );
+
+  const featuredPackages = visibleMenuItems.filter(
     (item) => item.category === "Paquetes" && item.isFeatured
   );
 
@@ -95,6 +103,11 @@ function App() {
   const restaurantStatus = getRestaurantStatus();
 
   const handleAddToCart = (item, selectedOption = null) => {
+    if (item.inventoryStatus?.isSoldOut) {
+      alert("Este producto está agotado por ahora.");
+      return;
+    }
+
     if (item.options && !selectedOption) {
       alert("Selecciona una opción antes de agregar este producto.");
       return;
@@ -296,7 +309,7 @@ function App() {
           element={
             <HomePage
               featuredPackages={featuredPackages}
-              menuItems={availableMenuItems}
+              menuItems={visibleMenuItems}
               restaurantStatus={restaurantStatus}
               onOrderClick={handleOpenOrderPage}
               onAddToCart={handleAddToCartAndOpenMenu}
@@ -308,7 +321,7 @@ function App() {
           path="/ordenar"
           element={
             <OrderPage
-              menuItems={availableMenuItems}
+              menuItems={visibleMenuItems}
               restaurantStatus={restaurantStatus}
               onBackHome={handleNavigateHome}
               onAddToCart={handleAddToCart}

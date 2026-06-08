@@ -17,9 +17,13 @@ function HomePage({ featuredPackages, menuItems, restaurantStatus, onOrderClick,
         ].includes(item.id)
     );
 
+    const heroItem = featuredPackages.find(
+        (item) => item.id === "paquete-familiar-asado"
+    );
+
     return (
         <>
-        <Hero restaurantStatus={restaurantStatus} onOrderClick={onOrderClick} onAddToCart={onAddToCart} />
+        <Hero heroItem={heroItem} restaurantStatus={restaurantStatus} onOrderClick={onOrderClick} onAddToCart={onAddToCart} />
         <FeaturedPackages packages={featuredPackages} onAddToCart={onAddToCart} />
         <MenuPreview menuItems={previewItems} onOrderClick={onOrderClick} onAddToCart={onAddToCart} />
         <HowItWorks />

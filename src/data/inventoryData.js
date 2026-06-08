@@ -1,24 +1,24 @@
 export const initialInventoryItems = [
-  {
+    {
     id: "pollo-asado",
     name: "Pollo Asado",
     unitLabel: "medios pollos",
     displayUnit: "medios",
     storedUnit: "halfUnits",
     quantity: 20,
-    lowStockThreshold: 6,
+    lowStockThreshold: 4,
     description: "Inventario para pollo asado. 1 pollo entero = 2 medios.",
-  },
-  {
+    },
+    {
     id: "pollo-ataud",
     name: "Pollo al Ataúd",
     unitLabel: "medios pollos",
     displayUnit: "medios",
     storedUnit: "halfUnits",
     quantity: 20,
-    lowStockThreshold: 6,
+    lowStockThreshold: 4,
     description: "Inventario para pollo al ataúd. 1 pollo entero = 2 medios.",
-  },
+    },
   {
     id: "sirloin",
     name: "Sirloin",

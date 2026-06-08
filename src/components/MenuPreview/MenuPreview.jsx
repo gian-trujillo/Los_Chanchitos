@@ -28,6 +28,18 @@ function MenuPreview({ menuItems, onOrderClick, onAddToCart }) {
                   <span className="menu__category">{item.category}</span>
                 </div>
 
+                {item.inventoryStatus?.isLowStock && (
+                  <span className="menu__stock-badge">
+                    {item.inventoryStatus.lowStockLabel}
+                  </span>
+                )}
+
+                {item.inventoryStatus?.isSoldOut && (
+                  <span className="menu__stock-badge menu__stock-badge--sold-out">
+                    Agotado
+                  </span>
+                )}
+
                 <h3>{item.name}</h3>
                 <p>{item.description}</p>
 
@@ -36,7 +48,12 @@ function MenuPreview({ menuItems, onOrderClick, onAddToCart }) {
                   <button
                     className="button button--secondary"
                     type="button"
+                    disabled={item.inventoryStatus?.isSoldOut}
                     onClick={() => {
+                      if (item.inventoryStatus?.isSoldOut) {
+                        return;
+                      }
+
                       if (item.options) {
                         onOrderClick(item.id);
                         return;
@@ -45,7 +62,7 @@ function MenuPreview({ menuItems, onOrderClick, onAddToCart }) {
                       onAddToCart(item);
                     }}
                   >
-                    Agregar
+                    {item.inventoryStatus?.isSoldOut ? "Agotado" : "Agregar"}
                   </button>
                 </div>
               </div>
