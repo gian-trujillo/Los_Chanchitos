@@ -1,6 +1,11 @@
 import "./AdminLayout.css";
 
-function AdminLayout({ children, activeSection = "dashboard", onLogout }) {
+function AdminLayout({
+  children,
+  activeSection = "dashboard",
+  onSectionChange,
+  onLogout,
+}) {
   const navItems = [
     {
       id: "dashboard",
@@ -39,10 +44,13 @@ function AdminLayout({ children, activeSection = "dashboard", onLogout }) {
           {navItems.map((item) => (
             <button
               className={`admin-layout__nav-button ${
-                activeSection === item.id ? "admin-layout__nav-button--active" : ""
+                activeSection === item.id
+                  ? "admin-layout__nav-button--active"
+                  : ""
               }`}
               type="button"
               key={item.id}
+              onClick={() => onSectionChange(item.id)}
             >
               {item.label}
             </button>

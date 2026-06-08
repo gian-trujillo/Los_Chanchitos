@@ -1,7 +1,12 @@
+import { useState } from "react";
 import AdminLayout from "../../components/AdminLayout/AdminLayout";
+import AdminMenuManager from "../../components/AdminMenuManager/AdminMenuManager";
+import { menuItems } from "../../data/menuData";
 import "./AdminDashboardPage.css";
 
 function AdminDashboardPage({ onLogout }) {
+  const [activeSection, setActiveSection] = useState("dashboard");
+
   const dashboardCards = [
     {
       label: "Pedidos nuevos",
@@ -25,8 +30,51 @@ function AdminDashboardPage({ onLogout }) {
     },
   ];
 
-  return (
-    <AdminLayout onLogout={onLogout}>
+  const renderActiveSection = () => {
+    if (activeSection === "menu") {
+      return <AdminMenuManager menuItems={menuItems} />;
+    }
+
+    if (activeSection === "orders") {
+      return (
+        <section className="admin-dashboard__placeholder">
+          <p className="section__eyebrow">Pedidos</p>
+          <h2>Gestión de pedidos</h2>
+          <p>
+            Aquí veremos pedidos nuevos, estados, WhatsApp y alertas del
+            restaurante.
+          </p>
+        </section>
+      );
+    }
+
+    if (activeSection === "inventory") {
+      return (
+        <section className="admin-dashboard__placeholder">
+          <p className="section__eyebrow">Inventario</p>
+          <h2>Control de inventario</h2>
+          <p>
+            Aquí administraremos pollo asado, pollo al ataúd, sirloin en kg y
+            complementos.
+          </p>
+        </section>
+      );
+    }
+
+    if (activeSection === "settings") {
+      return (
+        <section className="admin-dashboard__placeholder">
+          <p className="section__eyebrow">Configuración</p>
+          <h2>Ajustes del restaurante</h2>
+          <p>
+            Aquí configuraremos horario, abierto/cerrado, WhatsApp y tiempo
+            estimado de preparación.
+          </p>
+        </section>
+      );
+    }
+
+    return (
       <div className="admin-dashboard">
         <section className="admin-dashboard__welcome">
           <div>
@@ -78,6 +126,16 @@ function AdminDashboardPage({ onLogout }) {
           </div>
         </section>
       </div>
+    );
+  };
+
+  return (
+    <AdminLayout
+      activeSection={activeSection}
+      onSectionChange={setActiveSection}
+      onLogout={onLogout}
+    >
+      {renderActiveSection()}
     </AdminLayout>
   );
 }
