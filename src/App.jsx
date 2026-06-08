@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import "./App.css";
 import { saveOrderToStorage } from "./utils/orderStorage";
-import { featuredPackages, menuItems } from "./data/menuData";
+import { featuredPackages as initialFeaturedPackages, menuItems as initialMenuItems } from "./data/menuData";
 import Header from "./components/Header/Header";
 import Footer from "./components/Footer/Footer";
 import CartDrawer from "./components/CartDrawer/CartDrawer";
@@ -19,7 +19,14 @@ function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [submittedOrder, setSubmittedOrder] = useState(null);
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+  const [menuItems, setMenuItems] = useState(initialMenuItems);
   const navigate = useNavigate();
+
+  const availableMenuItems = menuItems.filter((item) => item.isAvailable !== false);
+
+  const featuredPackages = availableMenuItems.filter(
+    (item) => item.category === "Paquetes" && item.isFeatured
+  );
 
   const handleNavigateHome = () => {
     navigate("/");
@@ -235,6 +242,34 @@ function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const handleCreateMenuItem = (newItem) => {
+    setMenuItems((currentItems) => [newItem, ...currentItems]);
+  };
+
+  const handleUpdateMenuItem = (updatedItem) => {
+    setMenuItems((currentItems) =>
+      currentItems.map((item) =>
+        item.id === updatedItem.id ? updatedItem : item
+      )
+    );
+  };
+
+  const handleToggleMenuItemAvailability = (itemId) => {
+    setMenuItems((currentItems) =>
+      currentItems.map((item) =>
+        item.id === itemId
+          ? { ...item, isAvailable: item.isAvailable === false }
+          : item
+      )
+    );
+  };
+
+  const handleDeleteMenuItem = (itemId) => {
+    setMenuItems((currentItems) =>
+      currentItems.filter((item) => item.id !== itemId)
+    );
+  };
+
   return (
     <div className="app">
       <Header
@@ -251,7 +286,7 @@ function App() {
           element={
             <HomePage
               featuredPackages={featuredPackages}
-              menuItems={menuItems}
+              menuItems={availableMenuItems}
               restaurantStatus={restaurantStatus}
               onOrderClick={handleOpenOrderPage}
               onAddToCart={handleAddToCartAndOpenMenu}
@@ -263,7 +298,7 @@ function App() {
           path="/ordenar"
           element={
             <OrderPage
-              menuItems={menuItems}
+              menuItems={availableMenuItems}
               restaurantStatus={restaurantStatus}
               onBackHome={handleNavigateHome}
               onAddToCart={handleAddToCart}
@@ -321,7 +356,14 @@ function App() {
           path="/admin/dashboard"
           element={
             isAdminLoggedIn ? (
-              <AdminDashboardPage onLogout={handleAdminLogout} />
+              <AdminDashboardPage
+                menuItems={menuItems}
+                onCreateMenuItem={handleCreateMenuItem}
+                onUpdateMenuItem={handleUpdateMenuItem}
+                onToggleMenuItemAvailability={handleToggleMenuItemAvailability}
+                onDeleteMenuItem={handleDeleteMenuItem}
+                onLogout={handleAdminLogout}
+              />
             ) : (
               <AdminLoginPage
                 isAdminLoggedIn={isAdminLoggedIn}

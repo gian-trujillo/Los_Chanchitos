@@ -1,6 +1,8 @@
 export const featuredPackages = [
   {
     id: "paquete-medio-asado",
+    isFeatured: true,
+    isAvailable: true,
     category: "Paquetes",
     name: "Paquete Medio Asado",
     price: 319,
@@ -9,8 +11,11 @@ export const featuredPackages = [
     description:
       "1/2 pollo asado, 1/2 kg de sirloin, media cebolla asada y 1 salchicha.",
   },
+  
   {
     id: "paquete-medio-ataud",
+    isFeatured: true,
+    isAvailable: true,
     category: "Paquetes",
     name: "Paquete Medio Ataúd",
     price: 319,
@@ -21,6 +26,8 @@ export const featuredPackages = [
   },
   {
     id: "paquete-familiar-asado",
+    isFeatured: true,
+    isAvailable: true,
     category: "Paquetes",
     name: "Paquete Familiar Asado",
     price: 589,
@@ -31,6 +38,8 @@ export const featuredPackages = [
   },
   {
     id: "paquete-familiar-ataud",
+    isFeatured: true,
+    isAvailable: true,
     category: "Paquetes",
     name: "Paquete Familiar Ataúd",
     price: 589,
@@ -50,6 +59,7 @@ export const menuItems = [
     image: "/images/products/pollo-asado.jpg",
     description: "Pollo entero preparado al carbón.",
     badge: "Clásico",
+    isAvailable: true,
   },
   {
     id: "pollo-ataud",
@@ -59,6 +69,7 @@ export const menuItems = [
     image: "/images/products/pollo-ataud.jpg",
     description: "Pollo entero con preparación especial al ataúd.",
     badge: "Especial",
+    isAvailable: true,
   },
   {
     id: "medio-pollo-asado",
@@ -68,6 +79,7 @@ export const menuItems = [
     image: "/images/products/medio-pollo-asado.jpg",
     description: "Media pieza de pollo asado al carbón.",
     badge: "Pedido mínimo",
+    isAvailable: true,
   },
   {
     id: "medio-pollo-ataud",
@@ -77,6 +89,7 @@ export const menuItems = [
     image: "/images/products/medio-pollo-ataud.jpg",
     description: "Media pieza de pollo al ataúd.",
     badge: "Pedido mínimo",
+    isAvailable: true,
   },
   {
     id: "sirloin-kg",
@@ -86,6 +99,7 @@ export const menuItems = [
     image: "/images/products/sirloin-kg.jpg",
     description: "Sirloin preparado al carbón, ideal para compartir.",
     badge: "Al carbón",
+    isAvailable: true,
   },
   {
     id: "sirloin-medio-kg",
@@ -95,6 +109,7 @@ export const menuItems = [
     image: "/images/products/sirloin-medio-kg.jpg",
     description: "Media porción de sirloin preparado al carbón.",
     badge: "Al carbón",
+    isAvailable: true,
   },
   ...featuredPackages,
   {
@@ -105,6 +120,7 @@ export const menuItems = [
     image: "/images/products/salchicha.jpg",
     description: "Salchicha asada para acompañar tu pedido.",
     badge: "Complemento",
+    isAvailable: true,
   },
   {
     id: "arroz",
@@ -147,6 +163,7 @@ export const menuItems = [
         price: 40,
       },
     ],
+    isAvailable: true,
   },
   {
     id: "cebolla-asada",
@@ -156,6 +173,7 @@ export const menuItems = [
     image: "/images/products/cebolla-asada.jpg",
     description: "Cebolla asada para acompañar pollo o sirloin.",
     badge: "Complemento",
+    isAvailable: true,
   },
   {
     id: "papitas-picositas",
@@ -165,6 +183,7 @@ export const menuItems = [
     image: "/images/products/papitas-picositas.jpg",
     description: "Papitas con toque picosito.",
     badge: "Complemento",
+    isAvailable: true,
   },
   {
     id: "totopos",
@@ -174,6 +193,7 @@ export const menuItems = [
     image: "/images/products/totopos.jpg",
     description: "Totopos crujientes para acompañar.",
     badge: "Complemento",
+    isAvailable: true,
   },
   {
     id: "quesadilla-uno",
@@ -183,6 +203,7 @@ export const menuItems = [
     image: "/images/products/quesadilla.jpg",
     description: "Una quesadilla recién hecha.",
     badge: "Complemento",
+    isAvailable: true,
   },
   {
     id: "quesadillas-cuatro",
@@ -192,6 +213,7 @@ export const menuItems = [
     image: "/images/products/quesadillas-cuatro.jpg",
     description: "Orden de cuatro quesadillas.",
     badge: "Complemento",
+    isAvailable: true,
   },
   {
     id: "coca-cola",
@@ -201,6 +223,7 @@ export const menuItems = [
     image: "/images/products/coca-cola.jpg",
     description: "Refresco para acompañar tu pedido.",
     badge: "Bebida",
+    isAvailable: true,
   },
   {
     id: "coke-zero",
@@ -210,6 +233,7 @@ export const menuItems = [
     image: "/images/products/coke-zero.jpg",
     description: "Refresco sin azúcar.",
     badge: "Bebida",
+    isAvailable: true,
   },
   {
     id: "sprite",
@@ -219,6 +243,7 @@ export const menuItems = [
     image: "/images/products/sprite.jpg",
     description: "Refresco sabor lima-limón.",
     badge: "Bebida",
+    isAvailable: true,
   },
   {
     id: "joya",
@@ -228,6 +253,7 @@ export const menuItems = [
     image: "/images/products/joya.jpg",
     description: "Refresco Joya.",
     badge: "Bebida",
+    isAvailable: true,
   },
   {
     id: "agua",
@@ -237,6 +263,7 @@ export const menuItems = [
     image: "/images/products/agua.jpg",
     description: "Agua natural para acompañar tu pedido.",
     badge: "Bebida",
+    isAvailable: true,
   },
   {
     id: "ensalada-cesar",
@@ -246,6 +273,7 @@ export const menuItems = [
     image: "/images/products/ensalada-cesar.jpg",
     description: "Ensalada César para acompañar.",
     badge: "Ensalada",
+    isAvailable: true,
   },
   {
     id: "carlota",
@@ -255,5 +283,6 @@ export const menuItems = [
     image: "/images/products/carlota.jpg",
     description: "Postre frío y cremoso para cerrar tu comida.",
     badge: "Postre",
+    isAvailable: true,
   },
 ];

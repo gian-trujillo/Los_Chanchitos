@@ -115,6 +115,26 @@
   color: var(--color-cream);
 }
 
+.admin-menu__checkbox {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-charcoal);
+  font-size: var(--text-sm);
+  font-weight: 900;
+}
+
+.admin-menu__checkbox input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-fire);
+}
+
+.admin-menu__status--hidden {
+  background: rgba(155, 44, 31, 0.1);
+  color: var(--color-roasted);
+}
+
 .admin-menu__table {
   overflow: hidden;
 }
