@@ -1,0 +1,135 @@
+.admin-layout {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  min-height: 100vh;
+  background: var(--color-cream);
+}
+
+.admin-layout__sidebar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: var(--space-5);
+  background: var(--color-charcoal);
+  color: var(--color-cream);
+}
+
+.admin-layout__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+.admin-layout__brand img {
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
+}
+
+.admin-layout__brand h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  line-height: 1;
+}
+
+.admin-layout__brand p {
+  margin: var(--space-1) 0 0;
+  color: rgba(255, 244, 226, 0.66);
+  font-size: var(--text-sm);
+  font-weight: 800;
+}
+
+.admin-layout__nav {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.admin-layout__nav-button,
+.admin-layout__logout {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 var(--space-4);
+  border: 0;
+  border-radius: var(--radius-sm);
+  text-align: left;
+  font-weight: 900;
+}
+
+.admin-layout__nav-button {
+  background: transparent;
+  color: rgba(255, 244, 226, 0.72);
+}
+
+.admin-layout__nav-button:hover,
+.admin-layout__nav-button--active {
+  background: rgba(255, 244, 226, 0.12);
+  color: var(--color-cream);
+}
+
+.admin-layout__logout {
+  margin-top: auto;
+  background: rgba(232, 93, 36, 0.14);
+  color: var(--color-cream);
+}
+
+.admin-layout__main {
+  padding: var(--space-6);
+}
+
+.admin-layout__topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+  margin-bottom: var(--space-6);
+}
+
+.admin-layout__topbar h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 6vw, 4rem);
+  line-height: 0.95;
+}
+
+@media screen and (max-width: 860px) {
+  .admin-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-layout__sidebar {
+    position: static;
+    height: auto;
+  }
+
+  .admin-layout__nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-layout__logout {
+    margin-top: var(--space-5);
+  }
+}
+
+@media screen and (max-width: 560px) {
+  .admin-layout__main,
+  .admin-layout__sidebar {
+    padding: var(--space-4);
+  }
+
+  .admin-layout__topbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .admin-layout__topbar .button {
+    width: 100%;
+  }
+
+  .admin-layout__nav {
+    grid-template-columns: 1fr;
+  }
+}

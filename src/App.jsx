@@ -11,11 +11,14 @@ import OrderPage from "./pages/OrderPage/OrderPage";
 import CheckoutPage from "./pages/CheckoutPage/CheckoutPage";
 import OrderConfirmationPage from "./pages/OrderConfirmationPage/OrderConfirmationPage";
 import OrderStatusPage from "./pages/OrderStatusPage/OrderStatusPage";
+import AdminLoginPage from "./pages/AdminLoginPage/AdminLoginPage";
+import AdminDashboardPage from "./pages/AdminDashboardPage/AdminDashboardPage";
 
 function App() {
   const [cartItems, setCartItems] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [submittedOrder, setSubmittedOrder] = useState(null);
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const navigate = useNavigate();
 
   const handleNavigateHome = () => {
@@ -211,6 +214,27 @@ function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const handleAdminLogin = ({ email, password }) => {
+    const mockEmail = "admin@loschanchitos.com";
+    const mockPassword = "admin123";
+
+    if (email !== mockEmail || password !== mockPassword) {
+      return false;
+    }
+
+    setIsAdminLoggedIn(true);
+    navigate("/admin/dashboard");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    return true;
+  };
+
+  const handleAdminLogout = () => {
+    setIsAdminLoggedIn(false);
+    navigate("/admin/login");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <div className="app">
       <Header
@@ -280,6 +304,30 @@ function App() {
               onBackHome={handleNavigateHome}
               onBackToMenu={handleOpenOrderPage}
             />
+          }
+        />
+
+        <Route
+          path="/admin/login"
+          element={
+            <AdminLoginPage
+              isAdminLoggedIn={isAdminLoggedIn}
+              onLogin={handleAdminLogin}
+            />
+          }
+        />
+
+        <Route
+          path="/admin/dashboard"
+          element={
+            isAdminLoggedIn ? (
+              <AdminDashboardPage onLogout={handleAdminLogout} />
+            ) : (
+              <AdminLoginPage
+                isAdminLoggedIn={isAdminLoggedIn}
+                onLogin={handleAdminLogin}
+              />
+            )
           }
         />
       </Routes>
