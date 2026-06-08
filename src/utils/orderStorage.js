@@ -62,3 +62,22 @@ export const getOrderStatusLabel = (status) => {
 
   return statusLabels[status] || "Pedido recibido";
 };
+
+export const getOrderStatusStep = (status) => {
+  const statusSteps = {
+    received: 1,
+    confirmed: 2,
+    preparing: 3,
+    ready: 4,
+    completed: 5,
+    cancelled: 0,
+  };
+
+  return statusSteps[status] || 1;
+};
+
+export const findStoredOrderById = (orderId) => {
+  const storedOrders = getStoredOrders();
+
+  return storedOrders.find((order) => order.id === orderId) || null;
+};

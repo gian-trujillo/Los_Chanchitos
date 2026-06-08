@@ -247,6 +247,68 @@
   font-weight: 900;
 }
 
+.status-page__result-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
+.status-page__refresh {
+  min-height: 40px;
+  padding: 0 var(--space-4);
+  font-size: var(--text-sm);
+}
+
+.status-page__step--completed {
+  border-color: rgba(47, 143, 70, 0.24);
+  background: rgba(47, 143, 70, 0.08);
+  color: var(--color-green);
+}
+
+.status-page__step--completed span {
+  background: var(--color-green);
+  color: var(--color-white);
+}
+
+.status-page__step--cancelled {
+  border-color: rgba(155, 44, 31, 0.2);
+  background: rgba(155, 44, 31, 0.08);
+  color: var(--color-roasted);
+}
+
+.status-page__step--cancelled span {
+  background: var(--color-roasted);
+  color: var(--color-white);
+}
+
+.status-page__pill--cancelled {
+  background: rgba(155, 44, 31, 0.1);
+  color: var(--color-roasted);
+}
+
+.status-page__pill--completed {
+  background: rgba(31, 26, 23, 0.08);
+  color: var(--color-muted);
+}
+
+.status-page__pill--ready,
+.status-page__pill--confirmed {
+  background: rgba(47, 143, 70, 0.12);
+  color: var(--color-green);
+}
+
+.status-page__pill--preparing {
+  background: rgba(31, 26, 23, 0.1);
+  color: var(--color-charcoal);
+}
+
+.status-page__pill--received {
+  background: rgba(232, 93, 36, 0.12);
+  color: var(--color-fire-dark);
+}
+
 @media screen and (max-width: 920px) {
   .status-page__layout,
   .status-page__details {
@@ -267,6 +329,11 @@
 
   .status-page__result-header {
     flex-direction: column;
+  }
+
+  .status-page__result-actions {
+    width: 100%;
+    justify-content: flex-start;
   }
 
   .status-page__progress {
