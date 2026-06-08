@@ -37,3 +37,28 @@ export const findStoredOrder = ({ orderCode, phone }) => {
     return orderCodeMatches && phoneMatches;
   });
 };
+
+export const updateStoredOrder = (updatedOrder) => {
+  const storedOrders = getStoredOrders();
+
+  const updatedOrders = storedOrders.map((order) =>
+    order.id === updatedOrder.id ? updatedOrder : order
+  );
+
+  localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(updatedOrders));
+
+  return updatedOrder;
+};
+
+export const getOrderStatusLabel = (status) => {
+  const statusLabels = {
+    received: "Pedido recibido",
+    confirmed: "Confirmado",
+    preparing: "En preparación",
+    ready: "Listo para recoger",
+    completed: "Completado",
+    cancelled: "Cancelado",
+  };
+
+  return statusLabels[status] || "Pedido recibido";
+};

@@ -3,6 +3,7 @@ import "./AdminDashboardPage.css";
 import AdminLayout from "../../components/AdminLayout/AdminLayout";
 import AdminMenuManager from "../../components/AdminMenuManager/AdminMenuManager";
 import AdminInventoryManager from "../../components/AdminInventoryManager/AdminInventoryManager";
+import AdminOrdersManager from "../../components/AdminOrdersManager/AdminOrdersManager";
 // import { menuItems } from "../../data/menuData";
 
 function AdminDashboardPage({   menuItems, inventoryItems, onCreateMenuItem, onUpdateMenuItem, onToggleMenuItemAvailability, onDeleteMenuItem, onUpdateInventoryItem, onLogout }) {
@@ -41,20 +42,11 @@ function AdminDashboardPage({   menuItems, inventoryItems, onCreateMenuItem, onU
                 onToggleMenuItemAvailability={onToggleMenuItemAvailability}
                 onDeleteMenuItem={onDeleteMenuItem}
             />
-            );
+        );
     }
 
     if (activeSection === "orders") {
-        return (
-            <section className="admin-dashboard__placeholder">
-            <p className="section__eyebrow">Pedidos</p>
-            <h2>Gestión de pedidos</h2>
-            <p>
-                Aquí veremos pedidos nuevos, estados, WhatsApp y alertas del
-                restaurante.
-            </p>
-            </section>
-        );
+    return <AdminOrdersManager />;
     }
 
     if (activeSection === "inventory") {

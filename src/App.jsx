@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import "./App.css";
 import { saveOrderToStorage } from "./utils/orderStorage";
-import { featuredPackages as initialFeaturedPackages, menuItems as initialMenuItems } from "./data/menuData";
+import { menuItems as initialMenuItems } from "./data/menuData";
 import { addInventoryStatusToMenuItems } from "./utils/inventoryUtils";
 import Header from "./components/Header/Header";
 import Footer from "./components/Footer/Footer";
