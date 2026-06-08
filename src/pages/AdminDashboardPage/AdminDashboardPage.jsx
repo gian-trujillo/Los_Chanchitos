@@ -1,10 +1,11 @@
 import { useState } from "react";
+import "./AdminDashboardPage.css";
 import AdminLayout from "../../components/AdminLayout/AdminLayout";
 import AdminMenuManager from "../../components/AdminMenuManager/AdminMenuManager";
+import AdminInventoryManager from "../../components/AdminInventoryManager/AdminInventoryManager";
 // import { menuItems } from "../../data/menuData";
-import "./AdminDashboardPage.css";
 
-function AdminDashboardPage({   menuItems, onCreateMenuItem, onUpdateMenuItem, onToggleMenuItemAvailability, onDeleteMenuItem, onLogout }) {
+function AdminDashboardPage({   menuItems, inventoryItems, onCreateMenuItem, onUpdateMenuItem, onToggleMenuItemAvailability, onDeleteMenuItem, onUpdateInventoryItem, onLogout }) {
   const [activeSection, setActiveSection] = useState("dashboard");
 
   const dashboardCards = [
@@ -58,14 +59,10 @@ function AdminDashboardPage({   menuItems, onCreateMenuItem, onUpdateMenuItem, o
 
     if (activeSection === "inventory") {
         return (
-            <section className="admin-dashboard__placeholder">
-            <p className="section__eyebrow">Inventario</p>
-            <h2>Control de inventario</h2>
-            <p>
-                Aquí administraremos pollo asado, pollo al ataúd, sirloin en kg y
-                complementos.
-            </p>
-            </section>
+            <AdminInventoryManager
+            inventoryItems={inventoryItems}
+            onUpdateInventoryItem={onUpdateInventoryItem}
+            />
         );
     }
 

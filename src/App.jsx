@@ -13,6 +13,7 @@ import OrderConfirmationPage from "./pages/OrderConfirmationPage/OrderConfirmati
 import OrderStatusPage from "./pages/OrderStatusPage/OrderStatusPage";
 import AdminLoginPage from "./pages/AdminLoginPage/AdminLoginPage";
 import AdminDashboardPage from "./pages/AdminDashboardPage/AdminDashboardPage";
+import { initialInventoryItems } from "./data/inventoryData";
 
 function App() {
   const [cartItems, setCartItems] = useState([]);
@@ -20,6 +21,7 @@ function App() {
   const [submittedOrder, setSubmittedOrder] = useState(null);
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const [menuItems, setMenuItems] = useState(initialMenuItems);
+  const [inventoryItems, setInventoryItems] = useState(initialInventoryItems);
   const navigate = useNavigate();
 
   const availableMenuItems = menuItems.filter((item) => item.isAvailable !== false);
@@ -270,6 +272,14 @@ function App() {
     );
   };
 
+  const handleUpdateInventoryItem = (updatedInventoryItem) => {
+    setInventoryItems((currentItems) =>
+      currentItems.map((item) =>
+        item.id === updatedInventoryItem.id ? updatedInventoryItem : item
+      )
+    );
+  };
+
   return (
     <div className="app">
       <Header
@@ -358,10 +368,12 @@ function App() {
             isAdminLoggedIn ? (
               <AdminDashboardPage
                 menuItems={menuItems}
+                inventoryItems={inventoryItems}
                 onCreateMenuItem={handleCreateMenuItem}
                 onUpdateMenuItem={handleUpdateMenuItem}
                 onToggleMenuItemAvailability={handleToggleMenuItemAvailability}
                 onDeleteMenuItem={handleDeleteMenuItem}
+                onUpdateInventoryItem={handleUpdateInventoryItem}
                 onLogout={handleAdminLogout}
               />
             ) : (
