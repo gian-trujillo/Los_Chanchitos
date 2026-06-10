@@ -119,6 +119,19 @@ const orderSchema = new mongoose.Schema(
       enum: ["pickup", "online"],
       default: "pickup",
     },
+    paymentStatus: {
+        type: String,
+        enum: ["not_required", "pending", "paid", "failed", "refunded"],
+        default: "not_required",
+        },
+        paymentPreferenceId: {
+        type: String,
+        default: "",
+        },
+        paymentUrl: {
+        type: String,
+        default: "",
+    },
     details: {
       type: String,
       default: "",

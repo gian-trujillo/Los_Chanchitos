@@ -226,31 +226,35 @@ function CheckoutPage({
 
                     <div className="checkout__options">
                         <label className="checkout__choice checkout__choice--featured">
-                        <input
-                            type="radio"
-                            name="paymentMethod"
-                            value="pickup"
-                            checked={formValues.paymentMethod === "pickup"}
-                            onChange={handleChange}
-                        />
-                        <span>
-                            <strong>Pagar al recoger</strong>
-                            <small>Opción recomendada. Aparta tu pedido y paga en el local.</small>
-                        </span>
+                            <input
+                                type="radio"
+                                name="paymentMethod"
+                                value="pickup"
+                                checked={formValues.paymentMethod === "pickup"}
+                                onChange={handleChange}
+                            />
+                            <span>
+                                <strong>Pagar al recoger</strong>
+                                <small>Opción recomendada. Aparta tu pedido y paga en el local.</small>
+                            </span>
                         </label>
 
-                        <label className="checkout__choice">
-                        <input
-                            type="radio"
-                            name="paymentMethod"
-                            value="online"
-                            checked={formValues.paymentMethod === "online"}
-                            onChange={handleChange}
-                        />
-                        <span>
-                            <strong>Pago en línea</strong>
-                            <small>Más adelante conectaremos Mercado Pago o Stripe.</small>
-                        </span>
+                        <label className="checkout__choice checkout__choice--disabled">
+                            <input
+                                type="radio"
+                                name="paymentMethod"
+                                value="online"
+                                checked={formValues.paymentMethod === "online"}
+                                onChange={handleChange}
+                                disabled
+                            />
+                            <span>
+                                <strong>Pago con tarjeta</strong>
+                                <small>
+                                Próximamente disponible con Mercado Pago. Por ahora, selecciona pagar al
+                                recoger.
+                                </small>
+                            </span>
                         </label>
                     </div>
                 </section>

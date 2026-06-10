@@ -174,18 +174,21 @@ const createOrder = async (req, res, next) => {
     await validateAndReduceInventory(items);
 
     const order = await Order.create({
-      code,
-      customer: {
-        name: customer.name,
-        phone: normalizePhone(customer.phone),
-      },
-      pickup,
-      paymentMethod,
-      details,
-      items,
-      total,
-      status: "received",
-      statusLabel: statusLabels.received,
+        code,
+        customer: {
+            name: customer.name,
+            phone: normalizePhone(customer.phone),
+        },
+        pickup,
+        paymentMethod,
+        paymentStatus: paymentMethod === "online" ? "pending" : "not_required",
+        paymentPreferenceId: "",
+        paymentUrl: "",
+        details,
+        items,
+        total,
+        status: "received",
+        statusLabel: statusLabels.received,
     });
 
     return res.status(201).send(order);

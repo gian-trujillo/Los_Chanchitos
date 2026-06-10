@@ -169,3 +169,13 @@ export const updateOrderStatus = ({ orderId, status, token }) => {
     token,
   });
 };
+
+export const createPaymentPreference = ({ orderId }) => {
+  return request({
+    endpoint: "/payments/preference",
+    method: "POST",
+    body: {
+      orderId,
+    },
+  });
+};

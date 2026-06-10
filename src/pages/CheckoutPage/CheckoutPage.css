@@ -127,6 +127,16 @@
   line-height: 1.5;
 }
 
+.checkout__choice--disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.checkout__choice--disabled input,
+.checkout__choice--disabled span {
+  pointer-events: none;
+}
+
 .checkout__note,
 .checkout__warning {
   margin: var(--space-4) 0 0;

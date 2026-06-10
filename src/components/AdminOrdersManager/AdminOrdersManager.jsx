@@ -73,7 +73,15 @@ function AdminOrdersManager() {
   };
 
   const formatPaymentText = (order) => {
-    return order.paymentMethod === "pickup" ? "Pagar al recoger" : "Pago en línea";
+    if (order.paymentMethod === "pickup") {
+      return "Pagar al recoger";
+    }
+
+    if (order.paymentStatus === "paid") {
+      return "Pago con tarjeta confirmado";
+    }
+
+    return "Pago con tarjeta pendiente";
   };
 
   const getNextStatus = (status) => {

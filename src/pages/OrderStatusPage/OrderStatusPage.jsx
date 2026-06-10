@@ -63,7 +63,7 @@ function OrderStatusPage({ onBackHome, onBackToMenu }) {
     };
 
     const formatPaymentText = (order) => {
-        return order.paymentMethod === "pickup" ? "Pagar al recoger" : "Pago en línea";
+        return order.paymentMethod === "pickup" ? "Pagar al recoger" : "Pago con tarjeta";
     };
 
     const getStepClassName = (stepNumber, currentStep, orderStatus) => {

@@ -29,9 +29,8 @@ function OrderConfirmationPage({ order, onBackToMenu, onBackHome }) {
       ? "Lo antes posible"
       : `Programado para ${order.pickup.time}`;
 
-  const paymentText =
-    order.paymentMethod === "pickup" ? "Pagar al recoger" : "Pago en línea";
-
+  const paymentText = order.paymentMethod === "pickup" ? "Pagar al recoger" : "Pago con tarjeta";
+  
   return (
     <section className="confirmation section">
       <div className="confirmation__inner section__inner">
