@@ -191,6 +191,12 @@ const createOrder = async (req, res, next) => {
         statusLabel: statusLabels.received,
     });
 
+    const io = req.app.get("io");
+
+    if (io) {
+      io.emit("order:created", order);
+    }
+
     return res.status(201).send(order);
   } catch (error) {
     return next(error);
@@ -267,6 +273,12 @@ const updateOrderStatus = async (req, res, next) => {
     order.statusLabel = statusLabels[status];
 
     await order.save();
+
+    const io = req.app.get("io");
+
+    if (io) {
+      io.emit("order:updated", order);
+    }
 
     return res.status(200).send(order);
   } catch (error) {

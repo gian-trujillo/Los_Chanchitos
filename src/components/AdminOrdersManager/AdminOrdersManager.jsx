@@ -238,7 +238,7 @@ function AdminOrdersManager({
       </div>
 
       <p className="admin-orders__live-note">
-        El panel revisa pedidos nuevos automáticamente cada 15 segundos.
+        El panel recibe pedidos nuevos en tiempo real mientras el servidor esté conectado.
       </p>
 
       {newOrderItems.length > 0 && (

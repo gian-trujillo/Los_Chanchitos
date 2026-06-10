@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { socket } from "../../utils/socket";
 import { getAdminOrders } from "../../utils/api";
 import { getAdminToken } from "../../utils/token";
 import "./AdminDashboardPage.css";
@@ -74,6 +75,44 @@ function AdminDashboardPage({
 
         return () => {
             window.clearInterval(intervalId);
+        };
+    }, []);
+
+    useEffect(() => {
+        socket.connect();
+
+        const handleOrderCreated = (order) => {
+            setAdminOrders((currentOrders) => {
+            const alreadyExists = currentOrders.some(
+                (currentOrder) => currentOrder._id === order._id
+            );
+
+            if (alreadyExists) {
+                return currentOrders;
+            }
+
+            return [order, ...currentOrders];
+            });
+
+            setNewOrdersCount((currentCount) => currentCount + 1);
+            setNewOrderItems((currentItems) => [order, ...currentItems]);
+        };
+
+        const handleOrderUpdated = (updatedOrder) => {
+            setAdminOrders((currentOrders) =>
+            currentOrders.map((order) =>
+                order._id === updatedOrder._id ? updatedOrder : order
+            )
+            );
+        };
+
+        socket.on("order:created", handleOrderCreated);
+        socket.on("order:updated", handleOrderUpdated);
+
+        return () => {
+            socket.off("order:created", handleOrderCreated);
+            socket.off("order:updated", handleOrderUpdated);
+            socket.disconnect();
         };
     }, []);
 
