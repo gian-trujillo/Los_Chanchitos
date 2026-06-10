@@ -71,3 +71,64 @@ export const getRestaurantSettings = () => {
     endpoint: "/settings",
   });
 };
+
+export const createMenuItem = ({ item, token }) => {
+  return request({
+    endpoint: "/menu",
+    method: "POST",
+    body: item,
+    token,
+  });
+};
+
+export const updateMenuItem = ({ mongoId, item, token }) => {
+  return request({
+    endpoint: `/menu/${mongoId}`,
+    method: "PATCH",
+    body: item,
+    token,
+  });
+};
+
+export const deleteMenuItem = ({ mongoId, token }) => {
+  return request({
+    endpoint: `/menu/${mongoId}`,
+    method: "DELETE",
+    token,
+  });
+};
+
+export const createInventoryItem = ({ item, token }) => {
+  return request({
+    endpoint: "/inventory",
+    method: "POST",
+    body: item,
+    token,
+  });
+};
+
+export const updateInventoryItem = ({ mongoId, item, token }) => {
+  return request({
+    endpoint: `/inventory/${mongoId}`,
+    method: "PATCH",
+    body: item,
+    token,
+  });
+};
+
+export const deleteInventoryItem = ({ mongoId, token }) => {
+  return request({
+    endpoint: `/inventory/${mongoId}`,
+    method: "DELETE",
+    token,
+  });
+};
+
+export const updateRestaurantSettings = ({ settings, token }) => {
+  return request({
+    endpoint: "/settings",
+    method: "PATCH",
+    body: settings,
+    token,
+  });
+};

@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const InventoryItem = require("../models/inventoryItemModel");
 
 const getInventoryItems = async (req, res, next) => {
@@ -23,10 +24,18 @@ const createInventoryItem = async (req, res, next) => {
   }
 };
 
+const getInventoryQuery = (identifier) => {
+  if (mongoose.Types.ObjectId.isValid(identifier)) {
+    return { _id: identifier };
+  }
+
+  return { id: identifier };
+};
+
 const updateInventoryItem = async (req, res, next) => {
   try {
-    const inventoryItem = await InventoryItem.findByIdAndUpdate(
-      req.params.id,
+    const inventoryItem = await InventoryItem.findOneAndUpdate(
+      getInventoryQuery(req.params.id),
       req.body,
       {
         new: true,
@@ -48,7 +57,9 @@ const updateInventoryItem = async (req, res, next) => {
 
 const deleteInventoryItem = async (req, res, next) => {
   try {
-    const inventoryItem = await InventoryItem.findByIdAndDelete(req.params.id);
+    const inventoryItem = await InventoryItem.findOneAndDelete(
+      getInventoryQuery(req.params.id)
+    );
 
     if (!inventoryItem) {
       return res.status(404).send({

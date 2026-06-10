@@ -18,7 +18,7 @@ import FloatingWhatsApp from "./components/FloatingWhatsApp/FloatingWhatsApp";
 import { initialInventoryItems } from "./data/inventoryData";
 import { initialRestaurantSettings } from "./data/restaurantSettings";
 import { getClosedDayLabel, formatSettingsTime } from "./utils/restaurantFormatters";
-import { loginAdmin, getCurrentAdmin, getMenuItems, getInventoryItems, getRestaurantSettings } from "./utils/api";
+import { loginAdmin, getCurrentAdmin, getMenuItems, getInventoryItems, getRestaurantSettings, createMenuItem, updateMenuItem, deleteMenuItem, updateInventoryItem, updateRestaurantSettings } from "./utils/api";
 import { saveAdminToken, getAdminToken, removeAdminToken } from "./utils/token";
 
 function App() {
@@ -420,44 +420,154 @@ function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleCreateMenuItem = (newItem) => {
-    setMenuItems((currentItems) => [newItem, ...currentItems]);
+  const handleCreateMenuItem = async (newItem) => {
+    const token = getAdminToken();
+
+    try {
+      const createdItem = await createMenuItem({
+        item: newItem,
+        token,
+      });
+
+      setMenuItems((currentItems) => [createdItem, ...currentItems]);
+
+      return {
+        success: true,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message || "No se pudo crear el producto.",
+      };
+    }
   };
 
-  const handleUpdateMenuItem = (updatedItem) => {
-    setMenuItems((currentItems) =>
-      currentItems.map((item) =>
-        item.id === updatedItem.id ? updatedItem : item
-      )
-    );
+  const handleUpdateMenuItem = async (updatedItem) => {
+    const token = getAdminToken();
+
+    try {
+      const savedItem = await updateMenuItem({
+        mongoId: updatedItem._id || updatedItem.id,
+        item: updatedItem,
+        token,
+      });
+
+      setMenuItems((currentItems) =>
+        currentItems.map((item) =>
+          item._id === savedItem._id ? savedItem : item
+        )
+      );
+
+      return {
+        success: true,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message || "No se pudo actualizar el producto.",
+      };
+    }
   };
 
-  const handleToggleMenuItemAvailability = (itemId) => {
-    setMenuItems((currentItems) =>
-      currentItems.map((item) =>
-        item.id === itemId
-          ? { ...item, isAvailable: item.isAvailable === false }
-          : item
-      )
-    );
+  const handleToggleMenuItemAvailability = async (itemId) => {
+    const token = getAdminToken();
+    const itemToUpdate = menuItems.find((item) => item.id === itemId);
+
+    if (!itemToUpdate) {
+      return;
+    }
+
+    const updatedItem = {
+      ...itemToUpdate,
+      isAvailable: itemToUpdate.isAvailable === false,
+    };
+
+    try {
+      const savedItem = await updateMenuItem({
+        mongoId: itemToUpdate._id || itemToUpdate.id,
+        item: updatedItem,
+        token,
+      });
+
+      setMenuItems((currentItems) =>
+        currentItems.map((item) =>
+          item._id === savedItem._id ? savedItem : item
+        )
+      );
+    } catch (error) {
+      alert(error.message || "No se pudo cambiar el estado del producto.");
+    }
   };
 
-  const handleDeleteMenuItem = (itemId) => {
-    setMenuItems((currentItems) =>
-      currentItems.filter((item) => item.id !== itemId)
-    );
+  const handleDeleteMenuItem = async (itemId) => {
+    const token = getAdminToken();
+    const itemToDelete = menuItems.find((item) => item.id === itemId);
+
+    if (!itemToDelete) {
+      return;
+    }
+
+    try {
+      await deleteMenuItem({
+        mongoId: itemToDelete._id,
+        token,
+      });
+
+      setMenuItems((currentItems) =>
+        currentItems.filter((item) => item._id !== itemToDelete._id)
+      );
+    } catch (error) {
+      alert(error.message || "No se pudo eliminar el producto.");
+    }
   };
 
-  const handleUpdateInventoryItem = (updatedInventoryItem) => {
-    setInventoryItems((currentItems) =>
-      currentItems.map((item) =>
-        item.id === updatedInventoryItem.id ? updatedInventoryItem : item
-      )
-    );
+  const handleUpdateInventoryItem = async (updatedInventoryItem) => {
+    const token = getAdminToken();
+
+    try {
+      const savedInventoryItem = await updateInventoryItem({
+        mongoId: updatedInventoryItem._id || updatedInventoryItem.id,
+        item: updatedInventoryItem,
+        token,
+      });
+
+      setInventoryItems((currentItems) =>
+        currentItems.map((item) =>
+          item._id === savedInventoryItem._id ? savedInventoryItem : item
+        )
+      );
+
+      return {
+        success: true,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message || "No se pudo actualizar el inventario.",
+      };
+    }
   };
 
-  const handleUpdateRestaurantSettings = (updatedSettings) => {
-    setRestaurantSettings(updatedSettings);
+  const handleUpdateRestaurantSettings = async (updatedSettings) => {
+    const token = getAdminToken();
+
+    try {
+      const savedSettings = await updateRestaurantSettings({
+        settings: updatedSettings,
+        token,
+      });
+
+      setRestaurantSettings(savedSettings);
+
+      return {
+        success: true,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message || "No se pudo actualizar la configuración.",
+      };
+    }
   };
 
   return (

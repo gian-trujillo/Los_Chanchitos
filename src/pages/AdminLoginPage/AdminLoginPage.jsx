@@ -28,7 +28,7 @@ function AdminLoginPage({ isAdminLoggedIn, onLogin }) {
     const loginResult = await onLogin(formValues);
 
     if (!loginResult.success) {
-      setLoginError(loginResult.message || "Correo o contraseña incorrectos.");
+      setLoginError("Correo o contraseña incorrectos.");
     }
 
     setIsSubmitting(false);

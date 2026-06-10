@@ -4,6 +4,8 @@ import "./AdminInventoryManager.css";
 function AdminInventoryManager({ inventoryItems, onUpdateInventoryItem }) {
   const [editingItemId, setEditingItemId] = useState(null);
   const [inputValue, setInputValue] = useState("");
+  const [formMessage, setFormMessage] = useState("");
+  const [formError, setFormError] = useState("");
 
   const getDisplayQuantity = (item) => {
     if (item.storedUnit === "grams") {
@@ -41,24 +43,39 @@ function AdminInventoryManager({ inventoryItems, onUpdateInventoryItem }) {
     setInputValue("");
   };
 
-  const handleSave = (item) => {
+  const handleSave = async (item) => {
     const updatedQuantity = getStoredQuantityFromInput(item, inputValue);
 
-    onUpdateInventoryItem({
+    const result = await onUpdateInventoryItem({
       ...item,
       quantity: updatedQuantity,
     });
 
-    handleCancel();
+    if (result.success) {
+      setFormMessage("Inventario actualizado correctamente.");
+      setFormError("");
+      handleCancel();
+    } else {
+      setFormError(result.message || "No se pudo actualizar el inventario.");
+      setFormMessage("");
+    }
   };
 
-  const handleQuickAdjust = (item, amount) => {
+  const handleQuickAdjust = async (item, amount) => {
     const updatedQuantity = Math.max(0, item.quantity + amount);
 
-    onUpdateInventoryItem({
+    const result = await onUpdateInventoryItem({
       ...item,
       quantity: updatedQuantity,
     });
+
+    if (result.success) {
+      setFormMessage("Inventario actualizado correctamente.");
+      setFormError("");
+    } else {
+      setFormError(result.message || "No se pudo actualizar el inventario.");
+      setFormMessage("");
+    }
   };
 
   return (
@@ -73,6 +90,9 @@ function AdminInventoryManager({ inventoryItems, onUpdateInventoryItem }) {
           </p>
         </div>
       </div>
+
+      {formMessage && <p className="admin-inventory__success">{formMessage}</p>}
+      {formError && <p className="admin-inventory__error">{formError}</p>}
 
       <div className="admin-inventory__grid">
         {inventoryItems.map((item) => {

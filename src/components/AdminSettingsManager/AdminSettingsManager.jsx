@@ -3,6 +3,9 @@ import "./AdminSettingsManager.css";
 
 function AdminSettingsManager({ restaurantSettings, onUpdateRestaurantSettings }) {
   const [formValues, setFormValues] = useState(restaurantSettings);
+  const [formMessage, setFormMessage] = useState("");
+  const [formError, setFormError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target;
@@ -13,13 +16,25 @@ function AdminSettingsManager({ restaurantSettings, onUpdateRestaurantSettings }
     }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    onUpdateRestaurantSettings({
+    setIsSubmitting(true);
+    setFormMessage("");
+    setFormError("");
+
+    const result = await onUpdateRestaurantSettings({
       ...formValues,
       estimatedPrepTime: Number(formValues.estimatedPrepTime),
     });
+
+    if (result.success) {
+      setFormMessage("Configuración guardada correctamente.");
+    } else {
+      setFormError(result.message || "No se pudo guardar la configuración.");
+    }
+
+    setIsSubmitting(false);
   };
 
   const handleReset = () => {
@@ -188,6 +203,9 @@ function AdminSettingsManager({ restaurantSettings, onUpdateRestaurantSettings }
             Descartar cambios
           </button>
         </div>
+
+        {formMessage && <p className="admin-settings__success">{formMessage}</p>}
+        {formError && <p className="admin-settings__error">{formError}</p>}
       </form>
     </section>
   );

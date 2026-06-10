@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const MenuItem = require("../models/menuItemModel");
 
 const getMenuItems = async (req, res, next) => {
@@ -20,10 +21,18 @@ const createMenuItem = async (req, res, next) => {
   }
 };
 
+const getMenuItemQuery = (identifier) => {
+  if (mongoose.Types.ObjectId.isValid(identifier)) {
+    return { _id: identifier };
+  }
+
+  return { id: identifier };
+};
+
 const updateMenuItem = async (req, res, next) => {
   try {
-    const menuItem = await MenuItem.findByIdAndUpdate(
-      req.params.id,
+    const menuItem = await MenuItem.findOneAndUpdate(
+      getMenuItemQuery(req.params.id),
       req.body,
       {
         new: true,
@@ -45,7 +54,9 @@ const updateMenuItem = async (req, res, next) => {
 
 const deleteMenuItem = async (req, res, next) => {
   try {
-    const menuItem = await MenuItem.findByIdAndDelete(req.params.id);
+    const menuItem = await MenuItem.findOneAndDelete(
+      getMenuItemQuery(req.params.id)
+    );
 
     if (!menuItem) {
       return res.status(404).send({

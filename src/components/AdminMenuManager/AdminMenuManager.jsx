@@ -24,6 +24,9 @@ function AdminMenuManager({
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingItemId, setEditingItemId] = useState(null);
   const [formValues, setFormValues] = useState(emptyForm);
+  const [formMessage, setFormMessage] = useState("");
+  const [formError, setFormError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const categories = [
     "Todos",
@@ -58,6 +61,8 @@ function AdminMenuManager({
     setFormValues(emptyForm);
     setEditingItemId(null);
     setIsFormOpen(false);
+    setFormMessage("");
+    setFormError("");
   };
 
   const handleOpenCreateForm = () => {
@@ -68,6 +73,7 @@ function AdminMenuManager({
 
   const handleEditItem = (item) => {
     setFormValues({
+      _id: item._id,
       id: item.id,
       name: item.name,
       category: item.category,
@@ -92,37 +98,58 @@ function AdminMenuManager({
     }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+
+    setIsSubmitting(true);
+    setFormMessage("");
+    setFormError("");
 
     const generatedId = createSlug(formValues.name);
     const itemId = editingItemId || generatedId;
 
-    const priceValue = Number(formValues.price);
+    const priceValue =
+      formValues.options && formValues.options.length > 0
+        ? formValues.price
+        : Number(formValues.price);
 
-    if (!formValues.name || !formValues.category || Number.isNaN(priceValue)) {
+    if (
+      !formValues.name ||
+      !formValues.category ||
+      (!formValues.options && Number.isNaN(priceValue))
+    ) {
+      setFormError("Completa los campos requeridos correctamente.");
+      setIsSubmitting(false);
       return;
     }
 
     const itemPayload = {
+      ...formValues,
       id: itemId,
-      name: formValues.name,
-      category: formValues.category,
       price: priceValue,
-      badge: formValues.badge,
-      description: formValues.description,
       image: formValues.image || "/images/products/placeholder-product.jpg",
-      isFeatured: formValues.isFeatured,
-      isAvailable: formValues.isAvailable,
     };
 
+    let result;
+
     if (editingItemId) {
-      onUpdateMenuItem(itemPayload);
+      result = await onUpdateMenuItem(itemPayload);
     } else {
-      onCreateMenuItem(itemPayload);
+      result = await onCreateMenuItem(itemPayload);
     }
 
-    resetForm();
+    if (result.success) {
+      setFormMessage(
+        editingItemId
+          ? "Producto actualizado correctamente."
+          : "Producto creado correctamente."
+      );
+      resetForm();
+    } else {
+      setFormError(result.message || "No se pudo guardar el producto.");
+    }
+
+    setIsSubmitting(false);
   };
 
   return (
@@ -258,8 +285,8 @@ function AdminMenuManager({
           </div>
 
           <div className="admin-menu__form-actions">
-            <button className="button button--primary" type="submit">
-              {editingItemId ? "Guardar cambios" : "Guardar producto"}
+            <button className="button button--primary" type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Guardando..." : editingItemId ? "Guardar cambios" : "Guardar producto"}
             </button>
             <button
               className="button button--secondary"
@@ -342,6 +369,8 @@ function AdminMenuManager({
                 Eliminar
               </button>
             </div>
+            {formMessage && <p className="admin-menu__success">{formMessage}</p>}
+            {formError && <p className="admin-menu__error">{formError}</p>}
           </article>
         ))}
       </div>

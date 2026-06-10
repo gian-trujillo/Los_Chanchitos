@@ -221,6 +221,31 @@
   color: var(--color-roasted);
 }
 
+.admin-menu__success,
+.admin-menu__error {
+  margin: 0;
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  font-weight: 800;
+}
+
+.admin-menu__success {
+  background: rgba(47, 143, 70, 0.1);
+  color: var(--color-green);
+}
+
+.admin-menu__error {
+  background: rgba(155, 44, 31, 0.1);
+  color: var(--color-roasted);
+}
+
+.admin-menu__form-actions .button:disabled {
+  cursor: not-allowed;
+  opacity: 0.56;
+  transform: none;
+}
+
 @media screen and (max-width: 1160px) {
   .admin-menu__table {
     overflow-x: auto;
