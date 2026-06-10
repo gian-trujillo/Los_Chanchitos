@@ -6,10 +6,11 @@ const {
   updateInventoryItem,
   deleteInventoryItem,
 } = require("../controllers/inventoryController");
+const auth = require("../middlewares/auth");
 
 router.get("/", getInventoryItems);
-router.post("/", createInventoryItem);
-router.patch("/:id", updateInventoryItem);
-router.delete("/:id", deleteInventoryItem);
+router.post("/", auth, createInventoryItem);
+router.patch("/:id", auth, updateInventoryItem);
+router.delete("/:id", auth, deleteInventoryItem);
 
 module.exports = router;

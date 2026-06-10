@@ -4,8 +4,9 @@ const {
   getRestaurantSettings,
   updateRestaurantSettings,
 } = require("../controllers/settingsController");
+const auth = require("../middlewares/auth");
 
 router.get("/", getRestaurantSettings);
-router.patch("/", updateRestaurantSettings);
+router.patch("/", auth, updateRestaurantSettings);
 
 module.exports = router;

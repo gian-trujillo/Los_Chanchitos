@@ -6,10 +6,11 @@ const {
   updateMenuItem,
   deleteMenuItem,
 } = require("../controllers/menuController");
+const auth = require("../middlewares/auth");
 
 router.get("/", getMenuItems);
-router.post("/", createMenuItem);
-router.patch("/:id", updateMenuItem);
-router.delete("/:id", deleteMenuItem);
+router.post("/", auth, createMenuItem);
+router.patch("/:id", auth, updateMenuItem);
+router.delete("/:id", auth, deleteMenuItem);
 
 module.exports = router;
