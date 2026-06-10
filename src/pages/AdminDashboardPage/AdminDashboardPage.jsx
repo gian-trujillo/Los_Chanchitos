@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { getAdminOrders } from "../../utils/api";
+import { getAdminToken } from "../../utils/token";
 import "./AdminDashboardPage.css";
 import AdminLayout from "../../components/AdminLayout/AdminLayout";
 import AdminMenuManager from "../../components/AdminMenuManager/AdminMenuManager";
@@ -22,49 +24,121 @@ function AdminDashboardPage({
   onLogout,
 }) {
     const [activeSection, setActiveSection] = useState("dashboard");
+    const [adminOrders, setAdminOrders] = useState([]);
+    const [newOrdersCount, setNewOrdersCount] = useState(0);
+    const [newOrderItems, setNewOrderItems] = useState([]);
 
-    // const activeOrders = [];
+    const knownOrderIdsRef = useRef(new Set());
+    const hasLoadedOrdersRef = useRef(false);
+
+    useEffect(() => {
+        let intervalId;
+
+        const loadDashboardOrders = async ({ notifyNewOrders = false } = {}) => {
+            const token = getAdminToken();
+
+            try {
+            const orders = await getAdminOrders(token);
+
+            const currentKnownIds = knownOrderIdsRef.current;
+            const incomingOrders = orders.filter(
+                (order) => !currentKnownIds.has(order._id)
+            );
+
+            if (
+                notifyNewOrders &&
+                hasLoadedOrdersRef.current &&
+                incomingOrders.length > 0
+            ) {
+                setNewOrdersCount((currentCount) => currentCount + incomingOrders.length);
+                setNewOrderItems((currentItems) => [
+                ...incomingOrders,
+                ...currentItems,
+                ]);
+            }
+
+            knownOrderIdsRef.current = new Set(orders.map((order) => order._id));
+            hasLoadedOrdersRef.current = true;
+
+            setAdminOrders(orders);
+            } catch {
+            setAdminOrders([]);
+            }
+        };
+
+        loadDashboardOrders();
+
+        intervalId = window.setInterval(() => {
+            loadDashboardOrders({ notifyNewOrders: true });
+        }, 15000);
+
+        return () => {
+            window.clearInterval(intervalId);
+        };
+    }, []);
+
     const lowStockItems = inventoryItems.filter(
     (item) => item.quantity <= item.lowStockThreshold
     );
-    const unavailableMenuItems = menuItems.filter(
-    (item) => item.isAvailable === false
-    );
+
     const visibleMenuItems = menuItems.filter((item) => item.isAvailable !== false);
 
+    const activeOrderStatuses = ["received", "confirmed", "preparing", "ready"];
+
+    const activeOrders = adminOrders.filter((order) =>
+        activeOrderStatuses.includes(order.status)
+    );
+
+    const newOrders = adminOrders.filter((order) => order.status === "received");
+
+    const readyOrders = adminOrders.filter((order) => order.status === "ready");
+
     const dashboardCards = [
-    {
-        label: "Productos activos",
-        value: String(visibleMenuItems.length),
-        text: "Productos visibles para clientes.",
-    },
-    {
-        label: "Productos ocultos",
-        value: String(unavailableMenuItems.length),
-        text: "Productos desactivados desde el panel.",
-    },
-    {
-        label: "Bajo inventario",
-        value: String(lowStockItems.length),
-        text:
-        lowStockItems.length > 0
-            ? lowStockItems.map((item) => item.name).join(", ")
-            : "Sin alertas de inventario.",
-    },
-    {
-        label: "Estado",
-        value: restaurantSettings.pauseOrders
-        ? "Pausado"
-        : restaurantSettings.forceClosed
-            ? "Cerrado"
-            : "Activo",
-        text: restaurantSettings.pauseOrders
-        ? "Los pedidos están pausados temporalmente."
-        : restaurantSettings.forceClosed
-            ? "El restaurante está forzado como cerrado."
-            : "El sitio puede recibir pedidos dentro del horario configurado.",
-    },
+        {
+            label: "Pedidos activos",
+            value: String(activeOrders.length),
+            text:
+            activeOrders.length > 0
+                ? `${newOrders.length} nuevos, ${readyOrders.length} listos.`
+                : "No hay pedidos activos.",
+        },
+        {
+            label: "Productos activos",
+            value: String(visibleMenuItems.length),
+            text: "Productos visibles para clientes.",
+        },
+        {
+            label: "Bajo inventario",
+            value: String(lowStockItems.length),
+            text:
+            lowStockItems.length > 0
+                ? lowStockItems.map((item) => item.name).join(", ")
+                : "Sin alertas de inventario.",
+        },
+        {
+            label: "Estado",
+            value: restaurantSettings.pauseOrders
+            ? "Pausado"
+            : restaurantSettings.forceClosed
+                ? "Cerrado"
+                : "Activo",
+            text: restaurantSettings.pauseOrders
+            ? "Los pedidos están pausados temporalmente."
+            : restaurantSettings.forceClosed
+                ? "El restaurante está forzado como cerrado."
+                : "El sitio puede recibir pedidos dentro del horario configurado.",
+        },
     ];
+
+    const handleSectionChange = (sectionId) => {
+        setActiveSection(sectionId);
+
+        if (sectionId === "orders") {
+            setNewOrdersCount(0);
+            setNewOrderItems([]);
+        }
+    };
+    
 
     const renderActiveSection = () => {
         if (activeSection === "menu") {
@@ -82,7 +156,17 @@ function AdminDashboardPage({
         }
 
         if (activeSection === "orders") {
-            return <AdminOrdersManager />;
+            return (
+                <AdminOrdersManager
+                orders={adminOrders}
+                onOrdersChange={setAdminOrders}
+                newOrderItems={newOrderItems}
+                onClearNewOrders={() => {
+                    setNewOrdersCount(0);
+                    setNewOrderItems([]);
+                }}
+                />
+            );
         }
 
         if (activeSection === "inventory") {
@@ -116,6 +200,31 @@ function AdminDashboardPage({
                     </div>
                 </section>
 
+                {newOrderItems.length > 0 && activeSection === "dashboard" && (
+                    <section className="admin-dashboard__new-orders">
+                        <div>
+                        <h2>Nuevo pedido recibido</h2>
+                        <p>
+                            Hay {newOrderItems.length} pedido
+                            {newOrderItems.length === 1 ? "" : "s"} nuevo
+                            {newOrderItems.length === 1 ? "" : "s"} por revisar.
+                        </p>
+
+                        <ul>
+                            {newOrderItems.map((order) => (
+                            <li key={order._id}>
+                                {order.code} — {order.customer.name} — ${order.total} MXN
+                            </li>
+                            ))}
+                        </ul>
+                        </div>
+
+                        <button type="button" onClick={() => handleSectionChange("orders")}>
+                        Ver pedidos
+                        </button>
+                    </section>
+                )}
+
                 <section className="admin-dashboard__grid">
                     {dashboardCards.map((card) => (
                         <article className="admin-dashboard__card" key={card.label}>
@@ -124,6 +233,35 @@ function AdminDashboardPage({
                         <p>{card.text}</p>
                         </article>
                     ))}
+                </section>
+
+                <section className="admin-dashboard__activity">
+                    <div>
+                        <h2>Pedidos recientes</h2>
+                        <p>Últimos pedidos recibidos en el sistema.</p>
+                    </div>
+
+                    {adminOrders.length === 0 ? (
+                        <p className="admin-dashboard__empty-text">
+                        Todavía no hay pedidos registrados.
+                        </p>
+                    ) : (
+                        <div className="admin-dashboard__activity-list">
+                        {adminOrders.slice(0, 5).map((order) => (
+                            <article key={order._id}>
+                            <div>
+                                <strong>{order.code}</strong>
+                                <span>{order.customer.name}</span>
+                            </div>
+
+                            <div>
+                                <strong>${order.total} MXN</strong>
+                                <span>{order.statusLabel}</span>
+                            </div>
+                            </article>
+                        ))}
+                        </div>
+                    )}
                 </section>
 
                 <section className="admin-dashboard__next">
@@ -170,7 +308,8 @@ function AdminDashboardPage({
         <AdminLayout
             adminUser={adminUser}
             activeSection={activeSection}
-            onSectionChange={setActiveSection}
+            newOrdersCount={newOrdersCount}
+            onSectionChange={handleSectionChange}
             onLogout={onLogout}
         >
             {renderActiveSection()}

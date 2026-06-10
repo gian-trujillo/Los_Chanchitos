@@ -4,6 +4,7 @@ function AdminLayout({
   children,
   adminUser,
   activeSection = "dashboard",
+  newOrdersCount = 0,
   onSectionChange,
   onLogout,
 }) {
@@ -15,6 +16,7 @@ function AdminLayout({
     {
       id: "orders",
       label: "Pedidos",
+      alert: newOrdersCount,
     },
     {
       id: "menu",
@@ -52,15 +54,17 @@ function AdminLayout({
           {navItems.map((item) => (
             <button
               className={`admin-layout__nav-button ${
-                activeSection === item.id
-                  ? "admin-layout__nav-button--active"
-                  : ""
+                activeSection === item.id ? "admin-layout__nav-button--active" : ""
               }`}
               type="button"
               key={item.id}
               onClick={() => onSectionChange(item.id)}
             >
-              {item.label}
+              <span>{item.label}</span>
+
+              {item.alert > 0 && (
+                <span className="admin-layout__nav-alert">{item.alert}</span>
+              )}
             </button>
           ))}
         </nav>

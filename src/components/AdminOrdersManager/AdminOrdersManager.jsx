@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import {
   getAdminOrders,
   updateOrderStatus,
@@ -6,14 +6,19 @@ import {
 import { getAdminToken } from "../../utils/token";
 import "./AdminOrdersManager.css";
 
-function AdminOrdersManager() {
-  const [orders, setOrders] = useState([]);
+function AdminOrdersManager({
+  orders,
+  onOrdersChange,
+  newOrderItems = [],
+  onClearNewOrders,
+}) {
   const [ordersError, setOrdersError] = useState("");
   const [isLoadingOrders, setIsLoadingOrders] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("active");
-  const [newOrderNotice, setNewOrderNotice] = useState("");
-  const knownOrderIdsRef = useRef(new Set());
-  const hasLoadedOrdersRef = useRef(false);
+  // const [newOrderNotice, setNewOrderNotice] = useState("");
+  // const [newOrderItems, setNewOrderItems] = useState([]);
+  // const knownOrderIdsRef = useRef(new Set());
+  // const hasLoadedOrdersRef = useRef(false);
 
   const statusFilters = [
     {
@@ -106,38 +111,38 @@ function AdminOrdersManager() {
     return buttonText[status] || "";
   };
 
-  const playNewOrderSound = () => {
-    try {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      const audioContext = new AudioContext();
+  // const playNewOrderSound = () => {
+  //   try {
+  //     const AudioContext = window.AudioContext || window.webkitAudioContext;
+  //     const audioContext = new AudioContext();
 
-      const playBeep = (startTime, frequency) => {
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
+  //     const playBeep = (startTime, frequency) => {
+  //       const oscillator = audioContext.createOscillator();
+  //       const gainNode = audioContext.createGain();
 
-        oscillator.type = "sine";
-        oscillator.frequency.setValueAtTime(frequency, startTime);
+  //       oscillator.type = "sine";
+  //       oscillator.frequency.setValueAtTime(frequency, startTime);
 
-        gainNode.gain.setValueAtTime(0.0001, startTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.22, startTime + 0.03);
-        gainNode.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.28);
+  //       gainNode.gain.setValueAtTime(0.0001, startTime);
+  //       gainNode.gain.exponentialRampToValueAtTime(0.22, startTime + 0.03);
+  //       gainNode.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.28);
 
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
+  //       oscillator.connect(gainNode);
+  //       gainNode.connect(audioContext.destination);
 
-        oscillator.start(startTime);
-        oscillator.stop(startTime + 0.3);
-      };
+  //       oscillator.start(startTime);
+  //       oscillator.stop(startTime + 0.3);
+  //     };
 
-      playBeep(audioContext.currentTime, 880);
-      playBeep(audioContext.currentTime + 0.38, 1040);
-    } catch (err) {
-      console.log(err);
-      // Some browsers block audio until the admin interacts with the page.
-    }
-  };
+  //     playBeep(audioContext.currentTime, 880);
+  //     playBeep(audioContext.currentTime + 0.38, 1040);
+  //   } catch (err) {
+  //     console.log(err);
+  //     // Some browsers block audio until the admin interacts with the page.
+  //   }
+  // };
 
-  const loadOrders = async ({ showLoading = false, notifyNewOrders = false } = {}) => {
+  const loadOrders = async ({ showLoading = false } = {}) => {
     const token = getAdminToken();
 
     if (showLoading) {
@@ -147,27 +152,7 @@ function AdminOrdersManager() {
     try {
       const data = await getAdminOrders(token);
 
-      const currentKnownIds = knownOrderIdsRef.current;
-      const newOrders = data.filter((order) => !currentKnownIds.has(order._id));
-
-      if (
-        notifyNewOrders &&
-        hasLoadedOrdersRef.current &&
-        newOrders.length > 0
-      ) {
-        setOrdersError("");
-        setNewOrderNotice(
-          newOrders.length === 1
-            ? "Nuevo pedido recibido."
-            : `${newOrders.length} nuevos pedidos recibidos.`
-        );
-        playNewOrderSound();
-      }
-
-      knownOrderIdsRef.current = new Set(data.map((order) => order._id));
-      hasLoadedOrdersRef.current = true;
-
-      setOrders(data);
+      onOrdersChange(data);
       setOrdersError("");
     } catch (error) {
       setOrdersError(error.message || "No se pudieron cargar los pedidos.");
@@ -178,25 +163,9 @@ function AdminOrdersManager() {
     }
   };
 
-  useEffect(() => {
-    let intervalId;
-
-    const startOrderPolling = async () => {
-      await loadOrders({ showLoading: true });
-
-      intervalId = window.setInterval(() => {
-        loadOrders({ notifyNewOrders: true });
-      }, 15000);
-    };
-
-    startOrderPolling();
-
-    return () => {
-      if (intervalId) {
-        window.clearInterval(intervalId);
-      }
-    };
-  }, []);
+  // useEffect(() => {
+  //   loadOrders({ showLoading: true });
+  // }, []);
 
   const handleChangeStatus = async (order, nextStatus) => {
     const token = getAdminToken();
@@ -208,7 +177,7 @@ function AdminOrdersManager() {
         token,
       });
 
-      setOrders((currentOrders) =>
+      onOrdersChange((currentOrders) =>
         currentOrders.map((currentOrder) =>
           currentOrder._id === savedOrder._id ? savedOrder : currentOrder
         )
@@ -272,14 +241,62 @@ function AdminOrdersManager() {
         El panel revisa pedidos nuevos automáticamente cada 15 segundos.
       </p>
 
-      {newOrderNotice && (
-        <div className="admin-orders__new-notice">
-          <strong>{newOrderNotice}</strong>
-          <button type="button" onClick={() => setNewOrderNotice("")}>
+      {newOrderItems.length > 0 && (
+        <div
+          className="admin-orders__new-notice"
+          onMouseEnter={onClearNewOrders}
+          onFocus={onClearNewOrders}
+        >
+          <div>
+            <strong>
+              {newOrderItems.length === 1
+                ? "Nuevo pedido recibido."
+                : `${newOrderItems.length} nuevos pedidos recibidos.`}
+            </strong>
+
+            <ul>
+              {newOrderItems.map((order) => (
+                <li key={order._id}>
+                  {order.code} — {order.customer.name} — ${order.total} MXN
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <button type="button" onClick={onClearNewOrders}>
             Entendido
           </button>
         </div>
       )}
+
+      {/* {newOrderNotice && (
+        <div className="admin-orders__new-notice">
+          <div>
+            <strong>{newOrderNotice}</strong>
+
+            {newOrderItems.length > 0 && (
+              <ul>
+                {newOrderItems.map((order) => (
+                  <li key={order._id}>
+                    {order.code} — {order.customer.name} — ${order.total} MXN
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              setNewOrderNotice("");
+              setNewOrderItems([]);
+              setSelectedStatus("active");
+            }}
+          >
+            Ver pedidos
+          </button>
+        </div>
+      )} */}
 
       <div className="admin-orders__filters">
         {statusFilters.map((filter) => (
@@ -362,8 +379,11 @@ function AdminOrdersManager() {
                 )}
 
                 <div className="admin-orders__items">
-                  {order.items.map((item) => (
-                    <div className="admin-orders__item" key={item.id}>
+                  {order.items.map((item, index) => (
+                    <div
+                      className="admin-orders__item"
+                      key={`${order._id}-${item.productId}-${item.selectedOption?.id || "base"}-${index}`}
+                    >
                       <img src={item.image} alt={item.name} />
                       <div>
                         <strong>{item.name}</strong>

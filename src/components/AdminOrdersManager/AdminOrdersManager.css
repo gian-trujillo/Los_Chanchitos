@@ -65,6 +65,17 @@
   font-weight: 900;
 }
 
+.admin-orders__new-notice ul {
+  display: grid;
+  gap: var(--space-1);
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--color-charcoal);
+  font-size: var(--text-sm);
+  font-weight: 800;
+}
+
 .admin-orders__filters {
   display: flex;
   flex-wrap: wrap;
