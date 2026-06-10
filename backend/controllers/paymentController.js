@@ -1,6 +1,12 @@
 const { MercadoPagoConfig, Preference } = require("mercadopago");
 const Order = require("../models/orderModel");
 
+// Security note:
+// The Mercado Pago access token must stay only in the backend.
+// The frontend should never receive or store Mercado Pago secrets.
+// When real card payments are enabled, payment status should be confirmed
+// through Mercado Pago webhooks, not only through frontend redirects.
+
 const createPaymentPreference = async (req, res, next) => {
   try {
     const { orderId } = req.body;

@@ -59,6 +59,18 @@
   font-weight: 900;
 }
 
+.admin-menu__checkbox span {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.admin-menu__checkbox small {
+  color: var(--color-muted);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  line-height: 1.4;
+}
+
 .admin-menu__field input,
 .admin-menu__field select,
 .admin-menu__field textarea {
@@ -312,6 +324,17 @@
   color: var(--color-fire-dark) !important;
   font-size: var(--text-sm);
   font-weight: 800;
+}
+
+.admin-menu__inventory-warning {
+  margin: 0;
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  background: rgba(155, 44, 31, 0.1);
+  color: var(--color-roasted);
+  font-size: var(--text-sm);
+  font-weight: 800;
+  line-height: 1.5;
 }
 
 @media screen and (max-width: 760px) {

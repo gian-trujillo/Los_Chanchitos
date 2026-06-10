@@ -412,7 +412,7 @@ function AdminMenuManager({
                   type="button"
                   onClick={handleAddOption}
                 >
-                  Agregar opción
+                  Agregar tamaño/opción
                 </button>
               </div>
 
@@ -472,7 +472,7 @@ function AdminMenuManager({
                   type="button"
                   onClick={handleAddInventoryUsage}
                 >
-                  Agregar inventario
+                  Agregar ingrediente
                 </button>
               </div>
 
@@ -532,6 +532,12 @@ function AdminMenuManager({
                 Referencia: pollo entero = 2 medios, medio pollo = 1 medio, 1 kg sirloin =
                 1000 gramos, 1/2 kg sirloin = 500 gramos.
               </p>
+              {formValues.inventoryUsage.length === 0 && (
+                <p className="admin-menu__inventory-warning">
+                  Este producto no descontará inventario. Esto está bien para productos no
+                  rastreados, pero no para paquetes, pollo o sirloin.
+                </p>
+              )}
             </section>
 
             <div className="admin-menu__field admin-menu__field--wide">
@@ -554,13 +560,16 @@ function AdminMenuManager({
 
               <small>
                 Sube una imagen nueva o conserva la imagen actual. Tamaño máximo recomendado:
-                10 MB. Si Cloudinary no está configurado, puedes seguir usando una ruta manual
-                abajo.
+                10 MB. Las imágenes subidas aquí se guardan en Cloudinary.
               </small>
             </div>
 
             <label className="admin-menu__field admin-menu__field--wide">
-              <span>Ruta manual de imagen</span>
+              <span>Ruta manual de imagen — avanzado</span>
+              <small>
+                Úsalo solo para imágenes que ya existen en la carpeta public, por ejemplo:
+                /images/products/pollo-asado.jpg.
+              </small>
               <input
                 name="image"
                 type="text"
@@ -577,7 +586,10 @@ function AdminMenuManager({
                 checked={formValues.isFeatured}
                 onChange={handleChange}
               />
-              <span>Mostrar como destacado</span>
+              <span>
+                Destacar en inicio
+                <small>Actualmente solo aparece en inicio si el producto es un paquete.</small>
+              </span>
             </label>
 
             <label className="admin-menu__checkbox">
