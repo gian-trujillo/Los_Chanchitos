@@ -1,6 +1,6 @@
 import "./Header.css";
 
-function Header({ cartCount, onNavigateHome, onOrderClick, onCartClick, onStatusClick }) {
+function Header({ cartCount, onNavigateHome, onOrderClick, onCartClick, onStatusClick, onSectionClick }) {
   return (
     <header className="header">
       <div className="header__inner">
@@ -24,12 +24,13 @@ function Header({ cartCount, onNavigateHome, onOrderClick, onCartClick, onStatus
           >
             Menú
           </button>
-          <a className="header__link" href="#como-ordenar">
+          <button className="header__link" type="button" onClick={() => onSectionClick("como-ordenar")}>
             Cómo ordenar
-          </a>
-          <a className="header__link" href="#ubicacion">
+          </button>
+
+          <button className="header__link" type="button" onClick={() => onSectionClick("ubicacion")}>
             Ubicación
-          </a>
+          </button>
           <button className="header__link" type="button" onClick={onStatusClick}>
             Consultar pedido
           </button>

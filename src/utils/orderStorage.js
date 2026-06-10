@@ -1,5 +1,25 @@
 const ORDERS_STORAGE_KEY = "losChanchitosOrders";
 
+const FINISHED_ORDER_RETENTION_MS = 2 * 24 * 60 * 60 * 1000;
+
+const shouldKeepOrder = (order) => {
+  const finishedStatuses = ["completed", "cancelled"];
+
+  if (!finishedStatuses.includes(order.status)) {
+    return true;
+  }
+
+  const referenceDate = order.updatedAt || order.createdAt;
+
+  if (!referenceDate) {
+    return true;
+  }
+
+  const orderAge = Date.now() - new Date(referenceDate).getTime();
+
+  return orderAge < FINISHED_ORDER_RETENTION_MS;
+};
+
 export const getStoredOrders = () => {
   const storedOrders = localStorage.getItem(ORDERS_STORAGE_KEY);
 
@@ -8,7 +28,14 @@ export const getStoredOrders = () => {
   }
 
   try {
-    return JSON.parse(storedOrders);
+    const parsedOrders = JSON.parse(storedOrders);
+    const activeOrders = parsedOrders.filter(shouldKeepOrder);
+
+    if (activeOrders.length !== parsedOrders.length) {
+      localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(activeOrders));
+    }
+
+    return activeOrders;
   } catch {
     return [];
   }
@@ -41,13 +68,18 @@ export const findStoredOrder = ({ orderCode, phone }) => {
 export const updateStoredOrder = (updatedOrder) => {
   const storedOrders = getStoredOrders();
 
+  const orderWithTimestamp = {
+    ...updatedOrder,
+    updatedAt: new Date().toISOString(),
+  };
+
   const updatedOrders = storedOrders.map((order) =>
-    order.id === updatedOrder.id ? updatedOrder : order
+    order.id === orderWithTimestamp.id ? orderWithTimestamp : order
   );
 
   localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(updatedOrders));
 
-  return updatedOrder;
+  return orderWithTimestamp;
 };
 
 export const getOrderStatusLabel = (status) => {

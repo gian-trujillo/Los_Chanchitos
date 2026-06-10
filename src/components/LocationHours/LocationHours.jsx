@@ -1,7 +1,7 @@
 import "./LocationHours.css";
 import { getClosedDayLabel, formatSettingsTime } from "../../utils/restaurantFormatters";
 
-function LocationHours({ restaurantStatus, restaurantSettings }) {
+function LocationHours({ restaurantStatus, restaurantSettings, onOrderClick }) {
   const openingLabel = formatSettingsTime(restaurantSettings.openingTime);
   const closingLabel = formatSettingsTime(restaurantSettings.closingTime);
   const closedDayLabel = getClosedDayLabel(restaurantSettings.closedDay);
@@ -25,9 +25,13 @@ function LocationHours({ restaurantStatus, restaurantSettings }) {
             >
               Abrir en Maps
             </a>
-            <a className="button button--secondary" href="#menu">
+            <button
+              className="button button--secondary"
+              type="button"
+              onClick={() => onOrderClick()}
+            >
               Ordenar ahora
-            </a>
+            </button>
           </div>
         </div>
 

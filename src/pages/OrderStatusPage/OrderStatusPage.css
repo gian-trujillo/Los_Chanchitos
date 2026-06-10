@@ -309,6 +309,13 @@
   color: var(--color-fire-dark);
 }
 
+.status-page__refresh-note {
+  margin: var(--space-3) 0 0;
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+
 @media screen and (max-width: 920px) {
   .status-page__layout,
   .status-page__details {

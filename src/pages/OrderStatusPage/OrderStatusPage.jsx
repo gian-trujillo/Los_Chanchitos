@@ -162,8 +162,11 @@ function OrderStatusPage({ onBackHome, onBackToMenu }) {
                         type="button"
                         onClick={handleRefreshOrder}
                         >
-                            Actualizar estado
+                            Revisar si hay cambios
                         </button>
+                        <p className="status-page__refresh-note">
+                            El restaurante actualiza el estado conforme avanza tu pedido.
+                        </p>
                     </div>
                 </div>
 

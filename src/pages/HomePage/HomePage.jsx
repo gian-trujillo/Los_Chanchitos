@@ -27,7 +27,7 @@ function HomePage({ featuredPackages, menuItems, restaurantStatus, restaurantSet
         <FeaturedPackages packages={featuredPackages} onAddToCart={onAddToCart} />
         <MenuPreview menuItems={previewItems} onOrderClick={onOrderClick} onAddToCart={onAddToCart} />
         <HowItWorks />
-        <LocationHours restaurantStatus={restaurantStatus} restaurantSettings={restaurantSettings} />
+        <LocationHours restaurantStatus={restaurantStatus} restaurantSettings={restaurantSettings} onOrderClick={onOrderClick} />
         </>
     );
 }

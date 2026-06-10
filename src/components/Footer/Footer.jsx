@@ -1,11 +1,6 @@
 import "./Footer.css";
-import { getWhatsAppUrl } from "../../utils/restaurantFormatters";
 
-function Footer({ restaurantSettings, onNavigateHome, onOrderClick, onStatusClick }) {
-  const whatsappUrl = getWhatsAppUrl(
-    restaurantSettings.whatsappPhone,
-    "Hola, me gustaría hacer un pedido"
-  );
+function Footer({ onNavigateHome, onOrderClick, onStatusClick, onSectionClick }) {
 
   return (
     <footer className="footer">
@@ -19,16 +14,18 @@ function Footer({ restaurantSettings, onNavigateHome, onOrderClick, onStatusClic
           <button type="button" onClick={() => onOrderClick()}>
             Menú
           </button>
+
           <button type="button" onClick={onNavigateHome}>
             Inicio
           </button>
+
           <button type="button" onClick={onStatusClick}>
             Consultar pedido
           </button>
-          <a href="#ubicacion">Ubicación</a>
-          <a href={whatsappUrl} target="_blank" rel="noreferrer">
-            WhatsApp
-          </a>
+
+          <button type="button" onClick={() => onSectionClick("ubicacion")}>
+            Ubicación
+          </button>
         </div>
       </div>
     </footer>

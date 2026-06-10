@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import "./App.css";
 import { saveOrderToStorage } from "./utils/orderStorage";
 import { menuItems as initialMenuItems } from "./data/menuData";
@@ -14,6 +14,7 @@ import OrderConfirmationPage from "./pages/OrderConfirmationPage/OrderConfirmati
 import OrderStatusPage from "./pages/OrderStatusPage/OrderStatusPage";
 import AdminLoginPage from "./pages/AdminLoginPage/AdminLoginPage";
 import AdminDashboardPage from "./pages/AdminDashboardPage/AdminDashboardPage";
+import FloatingWhatsApp from "./components/FloatingWhatsApp/FloatingWhatsApp";
 import { initialInventoryItems } from "./data/inventoryData";
 import { initialRestaurantSettings } from "./data/restaurantSettings";
 import { getClosedDayLabel, formatSettingsTime } from "./utils/restaurantFormatters";
@@ -27,6 +28,8 @@ function App() {
   const [inventoryItems, setInventoryItems] = useState(initialInventoryItems);
   const [restaurantSettings, setRestaurantSettings] = useState(initialRestaurantSettings);
   const navigate = useNavigate();
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith("/admin");
 
   const inventoryAwareMenuItems = addInventoryStatusToMenuItems(
     menuItems,
@@ -44,6 +47,24 @@ function App() {
   const handleNavigateHome = () => {
     navigate("/");
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleNavigateToHomeSection = (sectionId) => {
+    const scrollToSection = () => {
+      const section = document.getElementById(sectionId);
+
+      if (section) {
+        section.scrollIntoView({ behavior: "smooth" });
+      }
+    };
+
+    if (location.pathname !== "/") {
+      navigate("/");
+      setTimeout(scrollToSection, 100);
+      return;
+    }
+
+    scrollToSection();
   };
 
   const handleOpenOrderPage = (itemId = null) => {
@@ -74,19 +95,6 @@ function App() {
 
     return days[dayNumber];
   };
-
-  // const formatTime = (time) => {
-  //   const [hours, minutes] = time.split(":").map(Number);
-  //   const date = new Date();
-
-  //   date.setHours(hours);
-  //   date.setMinutes(minutes);
-
-  //   return date.toLocaleTimeString("es-MX", {
-  //     hour: "numeric",
-  //     minute: "2-digit",
-  //   });
-  // };
 
   const getRestaurantStatus = () => {
     const now = new Date();
@@ -261,6 +269,37 @@ function App() {
     return `LC-${randomNumber}`;
   };
 
+  const reduceInventoryForOrder = (orderItems) => {
+    setInventoryItems((currentInventoryItems) =>
+      currentInventoryItems.map((inventoryItem) => {
+        const totalUsed = orderItems.reduce((total, orderItem) => {
+          if (!orderItem.inventoryUsage) {
+            return total;
+          }
+
+          const matchingUsage = orderItem.inventoryUsage.find(
+            (usage) => usage.inventoryId === inventoryItem.id
+          );
+
+          if (!matchingUsage) {
+            return total;
+          }
+
+          return total + matchingUsage.amount * orderItem.quantity;
+        }, 0);
+
+        if (totalUsed === 0) {
+          return inventoryItem;
+        }
+
+        return {
+          ...inventoryItem,
+          quantity: Math.max(0, inventoryItem.quantity - totalUsed),
+        };
+      })
+    );
+  };
+
   const handleSubmitOrder = (orderData) => {
     const newOrder = {
       id: generateOrderCode(),
@@ -283,6 +322,7 @@ function App() {
 
     setSubmittedOrder(newOrder);
     saveOrderToStorage(newOrder);
+    reduceInventoryForOrder(cartItems);
     setCartItems([]);
     setIsCartOpen(false);
     navigate("/pedido-confirmado");
@@ -363,6 +403,7 @@ function App() {
         onOrderClick={handleOpenOrderPage}
         onCartClick={() => setIsCartOpen(true)}
         onStatusClick={handleOpenStatusLookup}
+        onSectionClick={handleNavigateToHomeSection}
       />
 
       <Routes>
@@ -467,10 +508,11 @@ function App() {
       </Routes>
 
       <Footer
-        restaurantSettings={restaurantSettings}
+        // restaurantSettings={restaurantSettings}
         onNavigateHome={handleNavigateHome}
         onOrderClick={handleOpenOrderPage}
         onStatusClick={handleOpenStatusLookup}
+        onSectionClick={handleNavigateToHomeSection}
       />
 
       <CartDrawer
@@ -485,6 +527,10 @@ function App() {
         onRemoveFromCart={handleRemoveFromCart}
         onCheckout={handleOpenCheckout}
       />
+
+      {!isAdminRoute && (
+        <FloatingWhatsApp restaurantSettings={restaurantSettings} />
+      )}
     </div>
   );
 }

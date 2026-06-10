@@ -100,11 +100,11 @@ function AdminOrdersManager() {
       statusLabel: getOrderStatusLabel(nextStatus),
     };
 
-    updateStoredOrder(updatedOrder);
+    const savedOrder = updateStoredOrder(updatedOrder);
 
     setOrders((currentOrders) =>
       currentOrders.map((currentOrder) =>
-        currentOrder.id === updatedOrder.id ? updatedOrder : currentOrder
+        currentOrder.id === savedOrder.id ? savedOrder : currentOrder
       )
     );
   };
