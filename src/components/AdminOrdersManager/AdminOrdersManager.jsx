@@ -1,14 +1,19 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
-  getStoredOrders,
-  updateStoredOrder,
-  getOrderStatusLabel,
-} from "../../utils/orderStorage";
+  getAdminOrders,
+  updateOrderStatus,
+} from "../../utils/api";
+import { getAdminToken } from "../../utils/token";
 import "./AdminOrdersManager.css";
 
 function AdminOrdersManager() {
-  const [orders, setOrders] = useState(() => getStoredOrders());
+  const [orders, setOrders] = useState([]);
+  const [ordersError, setOrdersError] = useState("");
+  const [isLoadingOrders, setIsLoadingOrders] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("active");
+  const [newOrderNotice, setNewOrderNotice] = useState("");
+  const knownOrderIdsRef = useRef(new Set());
+  const hasLoadedOrdersRef = useRef(false);
 
   const statusFilters = [
     {
@@ -93,25 +98,121 @@ function AdminOrdersManager() {
     return buttonText[status] || "";
   };
 
-  const handleChangeStatus = (order, nextStatus) => {
-    const updatedOrder = {
-      ...order,
-      status: nextStatus,
-      statusLabel: getOrderStatusLabel(nextStatus),
+  const playNewOrderSound = () => {
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      const audioContext = new AudioContext();
+
+      const playBeep = (startTime, frequency) => {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.type = "sine";
+        oscillator.frequency.setValueAtTime(frequency, startTime);
+
+        gainNode.gain.setValueAtTime(0.0001, startTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.22, startTime + 0.03);
+        gainNode.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.28);
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        oscillator.start(startTime);
+        oscillator.stop(startTime + 0.3);
+      };
+
+      playBeep(audioContext.currentTime, 880);
+      playBeep(audioContext.currentTime + 0.38, 1040);
+    } catch (err) {
+      console.log(err);
+      // Some browsers block audio until the admin interacts with the page.
+    }
+  };
+
+  const loadOrders = async ({ showLoading = false, notifyNewOrders = false } = {}) => {
+    const token = getAdminToken();
+
+    if (showLoading) {
+      setIsLoadingOrders(true);
+    }
+
+    try {
+      const data = await getAdminOrders(token);
+
+      const currentKnownIds = knownOrderIdsRef.current;
+      const newOrders = data.filter((order) => !currentKnownIds.has(order._id));
+
+      if (
+        notifyNewOrders &&
+        hasLoadedOrdersRef.current &&
+        newOrders.length > 0
+      ) {
+        setOrdersError("");
+        setNewOrderNotice(
+          newOrders.length === 1
+            ? "Nuevo pedido recibido."
+            : `${newOrders.length} nuevos pedidos recibidos.`
+        );
+        playNewOrderSound();
+      }
+
+      knownOrderIdsRef.current = new Set(data.map((order) => order._id));
+      hasLoadedOrdersRef.current = true;
+
+      setOrders(data);
+      setOrdersError("");
+    } catch (error) {
+      setOrdersError(error.message || "No se pudieron cargar los pedidos.");
+    } finally {
+      if (showLoading) {
+        setIsLoadingOrders(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    let intervalId;
+
+    const startOrderPolling = async () => {
+      await loadOrders({ showLoading: true });
+
+      intervalId = window.setInterval(() => {
+        loadOrders({ notifyNewOrders: true });
+      }, 15000);
     };
 
-    const savedOrder = updateStoredOrder(updatedOrder);
+    startOrderPolling();
 
-    setOrders((currentOrders) =>
-      currentOrders.map((currentOrder) =>
-        currentOrder.id === savedOrder.id ? savedOrder : currentOrder
-      )
-    );
+    return () => {
+      if (intervalId) {
+        window.clearInterval(intervalId);
+      }
+    };
+  }, []);
+
+  const handleChangeStatus = async (order, nextStatus) => {
+    const token = getAdminToken();
+
+    try {
+      const savedOrder = await updateOrderStatus({
+        orderId: order._id,
+        status: nextStatus,
+        token,
+      });
+
+      setOrders((currentOrders) =>
+        currentOrders.map((currentOrder) =>
+          currentOrder._id === savedOrder._id ? savedOrder : currentOrder
+        )
+      );
+    } catch (error) {
+      alert(error.message || "No se pudo actualizar el pedido.");
+    }
   };
 
   const handleCancelOrder = (order) => {
     const shouldCancel = window.confirm(
-      `¿Seguro que quieres cancelar el pedido ${order.id}?`
+      `¿Seguro que quieres cancelar el pedido ${order.code}?`
     );
 
     if (!shouldCancel) {
@@ -126,9 +227,9 @@ function AdminOrdersManager() {
     const phoneWithCountryCode = phone.startsWith("52") ? phone : `52${phone}`;
 
     const messages = {
-      confirmed: `Hola ${order.customer.name}, tu pedido ${order.id} en Los Chanchitos fue confirmado. Te avisaremos cuando esté listo.`,
-      ready: `Hola ${order.customer.name}, tu pedido ${order.id} en Los Chanchitos ya está listo para recoger. Te esperamos.`,
-      custom: `Hola ${order.customer.name}, te escribimos de Los Chanchitos sobre tu pedido ${order.id}.`,
+      confirmed: `Hola ${order.customer.name}, tu pedido ${order.code} en Los Chanchitos fue confirmado. Te avisaremos cuando esté listo.`,
+      ready: `Hola ${order.customer.name}, tu pedido ${order.code} en Los Chanchitos ya está listo para recoger. Te esperamos.`,
+      custom: `Hola ${order.customer.name}, te escribimos de Los Chanchitos sobre tu pedido ${order.code}.`,
     };
 
     return `https://wa.me/${phoneWithCountryCode}?text=${encodeURIComponent(
@@ -153,11 +254,24 @@ function AdminOrdersManager() {
         <button
           className="button button--secondary"
           type="button"
-          onClick={() => setOrders(getStoredOrders())}
+          onClick={() => loadOrders({ showLoading: true })}
         >
           Actualizar
         </button>
       </div>
+
+      <p className="admin-orders__live-note">
+        El panel revisa pedidos nuevos automáticamente cada 15 segundos.
+      </p>
+
+      {newOrderNotice && (
+        <div className="admin-orders__new-notice">
+          <strong>{newOrderNotice}</strong>
+          <button type="button" onClick={() => setNewOrderNotice("")}>
+            Entendido
+          </button>
+        </div>
+      )}
 
       <div className="admin-orders__filters">
         {statusFilters.map((filter) => (
@@ -174,7 +288,21 @@ function AdminOrdersManager() {
         ))}
       </div>
 
-      {visibleOrders.length === 0 ? (
+      {isLoadingOrders && (
+        <div className="admin-orders__empty">
+          <h3>Cargando pedidos...</h3>
+          <p>Estamos consultando los pedidos guardados en el backend.</p>
+        </div>
+      )}
+
+      {ordersError && (
+        <div className="admin-orders__empty">
+          <h3>No se pudieron cargar los pedidos.</h3>
+          <p>{ordersError}</p>
+        </div>
+      )}
+
+      {!isLoadingOrders && !ordersError && visibleOrders.length === 0 ? (
         <div className="admin-orders__empty">
           <h3>No hay pedidos en esta sección.</h3>
           <p>
@@ -182,16 +310,16 @@ function AdminOrdersManager() {
             para verlo aquí.
           </p>
         </div>
-      ) : (
+      ) : !isLoadingOrders && !ordersError ? (
         <div className="admin-orders__list">
           {visibleOrders.map((order) => {
             const nextStatus = getNextStatus(order.status);
 
             return (
-              <article className="admin-orders__card" key={order.id}>
+              <article className="admin-orders__card" key={order.code}>
                 <div className="admin-orders__card-header">
                   <div>
-                    <span className="admin-orders__code">{order.id}</span>
+                    <span className="admin-orders__code">{order.code}</span>
                     <h3>{order.customer.name}</h3>
                     <p>{order.customer.phone}</p>
                   </div>
@@ -284,7 +412,7 @@ function AdminOrdersManager() {
             );
           })}
         </div>
-      )}
+      ) : null }
     </section>
   );
 }

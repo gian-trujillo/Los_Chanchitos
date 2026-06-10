@@ -132,3 +132,40 @@ export const updateRestaurantSettings = ({ settings, token }) => {
     token,
   });
 };
+
+export const createOrder = (orderData) => {
+  return request({
+    endpoint: "/orders",
+    method: "POST",
+    body: orderData,
+  });
+};
+
+export const getOrderStatus = ({ code, phone }) => {
+  const searchParams = new URLSearchParams({
+    code,
+    phone,
+  });
+
+  return request({
+    endpoint: `/orders/status?${searchParams.toString()}`,
+  });
+};
+
+export const getAdminOrders = (token) => {
+  return request({
+    endpoint: "/orders/admin",
+    token,
+  });
+};
+
+export const updateOrderStatus = ({ orderId, status, token }) => {
+  return request({
+    endpoint: `/orders/${orderId}/status`,
+    method: "PATCH",
+    body: {
+      status,
+    },
+    token,
+  });
+};

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import "./App.css";
-import { saveOrderToStorage } from "./utils/orderStorage";
+// import { saveOrderToStorage } from "./utils/orderStorage";
 import { menuItems as initialMenuItems } from "./data/menuData";
 import { addInventoryStatusToMenuItems } from "./utils/inventoryUtils";
 import Header from "./components/Header/Header";
@@ -18,7 +18,7 @@ import FloatingWhatsApp from "./components/FloatingWhatsApp/FloatingWhatsApp";
 import { initialInventoryItems } from "./data/inventoryData";
 import { initialRestaurantSettings } from "./data/restaurantSettings";
 import { getClosedDayLabel, formatSettingsTime } from "./utils/restaurantFormatters";
-import { loginAdmin, getCurrentAdmin, getMenuItems, getInventoryItems, getRestaurantSettings, createMenuItem, updateMenuItem, deleteMenuItem, updateInventoryItem, updateRestaurantSettings } from "./utils/api";
+import { loginAdmin, getCurrentAdmin, getMenuItems, getInventoryItems, getRestaurantSettings, createMenuItem, updateMenuItem, deleteMenuItem, updateInventoryItem, updateRestaurantSettings, createOrder } from "./utils/api";
 import { saveAdminToken, getAdminToken, removeAdminToken } from "./utils/token";
 
 function App() {
@@ -320,50 +320,44 @@ function App() {
     (item) => item.category === "Individuales" || item.category === "Paquetes"
   );
 
-  const generateOrderCode = () => {
-  const randomNumber = Math.floor(1000 + Math.random() * 9000);
-    return `LC-${randomNumber}`;
-  };
+  // const generateOrderCode = () => {
+  // const randomNumber = Math.floor(1000 + Math.random() * 9000);
+  //   return `LC-${randomNumber}`;
+  // };
 
-  const reduceInventoryForOrder = (orderItems) => {
-    setInventoryItems((currentInventoryItems) =>
-      currentInventoryItems.map((inventoryItem) => {
-        const totalUsed = orderItems.reduce((total, orderItem) => {
-          if (!orderItem.inventoryUsage) {
-            return total;
-          }
+  // const reduceInventoryForOrder = (orderItems) => {
+  //   setInventoryItems((currentInventoryItems) =>
+  //     currentInventoryItems.map((inventoryItem) => {
+  //       const totalUsed = orderItems.reduce((total, orderItem) => {
+  //         if (!orderItem.inventoryUsage) {
+  //           return total;
+  //         }
 
-          const matchingUsage = orderItem.inventoryUsage.find(
-            (usage) => usage.inventoryId === inventoryItem.id
-          );
+  //         const matchingUsage = orderItem.inventoryUsage.find(
+  //           (usage) => usage.inventoryId === inventoryItem.id
+  //         );
 
-          if (!matchingUsage) {
-            return total;
-          }
+  //         if (!matchingUsage) {
+  //           return total;
+  //         }
 
-          return total + matchingUsage.amount * orderItem.quantity;
-        }, 0);
+  //         return total + matchingUsage.amount * orderItem.quantity;
+  //       }, 0);
 
-        if (totalUsed === 0) {
-          return inventoryItem;
-        }
+  //       if (totalUsed === 0) {
+  //         return inventoryItem;
+  //       }
 
-        return {
-          ...inventoryItem,
-          quantity: Math.max(0, inventoryItem.quantity - totalUsed),
-        };
-      })
-    );
-  };
+  //       return {
+  //         ...inventoryItem,
+  //         quantity: Math.max(0, inventoryItem.quantity - totalUsed),
+  //       };
+  //     })
+  //   );
+  // };
 
-  const handleSubmitOrder = (orderData) => {
-    const newOrder = {
-      id: generateOrderCode(),
-      status: "received",
-      statusLabel: "Pedido recibido",
-      createdAt: new Date().toISOString(),
-      items: cartItems,
-      total: cartTotal,
+  const handleSubmitOrder = async (orderData) => {
+    const orderPayload = {
       customer: {
         name: orderData.name,
         phone: orderData.phone,
@@ -374,15 +368,45 @@ function App() {
       },
       paymentMethod: orderData.paymentMethod,
       details: orderData.details,
+      items: cartItems.map((item) => ({
+        productId: item.baseProductId || item.id,
+        productMongoId: item._id || null,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        image: item.image,
+        selectedOption: item.selectedOption,
+        inventoryUsage: item.inventoryUsage,
+      })),
+      total: cartTotal,
     };
 
-    setSubmittedOrder(newOrder);
-    saveOrderToStorage(newOrder);
-    reduceInventoryForOrder(cartItems);
-    setCartItems([]);
-    setIsCartOpen(false);
-    navigate("/pedido-confirmado");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    try {
+      const createdOrder = await createOrder(orderPayload);
+
+      setSubmittedOrder(createdOrder);
+      setCartItems([]);
+      setIsCartOpen(false);
+      navigate("/pedido-confirmado");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
+      const [updatedInventoryData, updatedMenuData] = await Promise.all([
+        getInventoryItems(),
+        getMenuItems(),
+      ]);
+
+      setInventoryItems(updatedInventoryData);
+      setMenuItems(updatedMenuData);
+
+      return {
+        success: true,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message || "No se pudo confirmar el pedido.",
+      };
+    }
   };
 
   const handleOpenStatusLookup = () => {

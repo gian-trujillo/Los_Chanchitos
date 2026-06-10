@@ -100,6 +100,28 @@ const validateAndReduceInventory = async (items) => {
   );
 };
 
+const restoreInventoryForOrder = async (items) => {
+  const usageTotals = getInventoryUsageTotals(items);
+  const inventoryIds = Object.keys(usageTotals);
+
+  if (inventoryIds.length === 0) {
+    return;
+  }
+
+  await Promise.all(
+    inventoryIds.map((inventoryId) =>
+      InventoryItem.updateOne(
+        { id: inventoryId },
+        {
+          $inc: {
+            quantity: usageTotals[inventoryId],
+          },
+        }
+      )
+    )
+  );
+};
+
 const createOrder = async (req, res, next) => {
   try {
     const { customer, pickup, paymentMethod, details, items, total } = req.body;
@@ -190,23 +212,27 @@ const updateOrderStatus = async (req, res, next) => {
       });
     }
 
-    const order = await Order.findByIdAndUpdate(
-      req.params.id,
-      {
-        status,
-        statusLabel: statusLabels[status],
-      },
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
+    const order = await Order.findById(req.params.id);
 
     if (!order) {
       return res.status(404).send({
         message: "Pedido no encontrado.",
       });
     }
+
+    const shouldRestoreInventory =
+      status === "cancelled" &&
+      order.status !== "cancelled" &&
+      order.status !== "completed";
+
+    if (shouldRestoreInventory) {
+      await restoreInventoryForOrder(order.items);
+    }
+
+    order.status = status;
+    order.statusLabel = statusLabels[status];
+
+    await order.save();
 
     return res.status(200).send(order);
   } catch (error) {

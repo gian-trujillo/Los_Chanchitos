@@ -47,7 +47,7 @@ function OrderConfirmationPage({ order, onBackToMenu, onBackHome }) {
         <div className="confirmation__layout">
           <article className="confirmation__card">
             <span className="badge">Número de pedido</span>
-            <h2>{order.id}</h2>
+            <h2>{order.code}</h2>
 
             <div className="confirmation__status">
               <span></span>

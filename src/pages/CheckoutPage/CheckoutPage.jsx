@@ -20,6 +20,8 @@ function CheckoutPage({
         details: "",
         paymentMethod: "pickup",
     });
+    const [submitError, setSubmitError] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const isCartEmpty = cartItems.length === 0;
     const getMinutesFromTime = (time) => {
@@ -76,14 +78,23 @@ function CheckoutPage({
         }));
     };
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
+    const handleSubmit = async (event) => {
+    event.preventDefault();
 
-        // if (!canSubmit) {
-        //     return;
-        // }
+    if (!canSubmit) {
+        return;
+    }
 
-        onSubmitOrder(formValues);
+    setIsSubmitting(true);
+    setSubmitError("");
+
+    const result = await onSubmitOrder(formValues);
+
+    if (!result.success) {
+        setSubmitError(result.message || "No se pudo confirmar el pedido.");
+    }
+
+    setIsSubmitting(false);
     };
 
     return (
@@ -244,20 +255,26 @@ function CheckoutPage({
                     </div>
                 </section>
 
-                {/* {!restaurantIsOpen && (
+                {!restaurantIsOpen && (
                     <p className="checkout__warning">
                         El restaurante está cerrado en este momento. Los pedidos se aceptan de
                         miércoles a lunes, de 12:00 PM a 5:00 PM.
                     </p>
-                )} */}
+                )}
 
                 <button
-                className="button button--primary checkout__submit"
-                type="submit"
-                // disabled={!canSubmit}
+                    className="button button--primary checkout__submit"
+                    type="submit"
+                    disabled={!canSubmit || isSubmitting}
                 >
-                    Confirmar pedido
+                    {isSubmitting ? "Confirmando..." : "Confirmar pedido"}
                 </button>
+
+                {submitError && (
+                    <p className="checkout__warning">
+                        {submitError}
+                    </p>
+                )}
 
                 {!hasMainItem && (
                 <p className="checkout__warning">

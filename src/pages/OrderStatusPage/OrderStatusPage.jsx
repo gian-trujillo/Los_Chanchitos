@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./OrderStatusPage.css";
-import { findStoredOrder, findStoredOrderById, getOrderStatusStep } from "../../utils/orderStorage";
+import { getOrderStatus } from "../../utils/api";
+import { getOrderStatusStep } from "../../utils/orderStatus";
 
 function OrderStatusPage({ onBackHome, onBackToMenu }) {
     const [formValues, setFormValues] = useState({
@@ -19,27 +20,37 @@ function OrderStatusPage({ onBackHome, onBackToMenu }) {
         }));
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
-        const matchingOrder = findStoredOrder({
-            orderCode: formValues.orderCode,
+        try {
+            const matchingOrder = await getOrderStatus({
+            code: formValues.orderCode,
             phone: formValues.phone,
-        });
+            });
 
-        setFoundOrder(matchingOrder || null);
-        setHasSearched(true);
+            setFoundOrder(matchingOrder);
+        } catch {
+            setFoundOrder(null);
+        } finally {
+            setHasSearched(true);
+        }
     };
 
-    const handleRefreshOrder = () => {
+    const handleRefreshOrder = async () => {
         if (!foundOrder) {
             return;
         }
 
-        const updatedOrder = findStoredOrderById(foundOrder.id);
+        try {
+            const updatedOrder = await getOrderStatus({
+            code: foundOrder.code,
+            phone: foundOrder.customer.phone,
+            });
 
-        if (updatedOrder) {
             setFoundOrder(updatedOrder);
+        } catch {
+            setFoundOrder(null);
         }
     };
 
@@ -147,7 +158,7 @@ function OrderStatusPage({ onBackHome, onBackToMenu }) {
                 <div className="status-page__result-header">
                     <div>
                         <p className="section__eyebrow">Resultado</p>
-                        <h2>Pedido {foundOrder.id}</h2>
+                        <h2>Pedido {foundOrder.code}</h2>
                     </div>
 
                     <div className="status-page__result-actions">
