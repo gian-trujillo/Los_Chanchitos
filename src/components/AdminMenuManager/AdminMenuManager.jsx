@@ -7,6 +7,7 @@ function AdminMenuManager({
   onUpdateMenuItem,
   onToggleMenuItemAvailability,
   onDeleteMenuItem,
+  onUploadMenuImage,
 }) {
   const emptyForm = {
     id: "",
@@ -16,6 +17,7 @@ function AdminMenuManager({
     badge: "",
     description: "",
     image: "",
+    imagePublicId: "",
     isFeatured: false,
     isAvailable: true,
   };
@@ -27,6 +29,8 @@ function AdminMenuManager({
   const [formMessage, setFormMessage] = useState("");
   const [formError, setFormError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedImageFile, setSelectedImageFile] = useState(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   const categories = [
     "Todos",
@@ -63,6 +67,8 @@ function AdminMenuManager({
     setIsFormOpen(false);
     setFormMessage("");
     setFormError("");
+    setSelectedImageFile(null);
+    setIsUploadingImage(false);
   };
 
   const handleOpenCreateForm = () => {
@@ -81,12 +87,23 @@ function AdminMenuManager({
       badge: item.badge || "",
       description: item.description || "",
       image: item.image || "",
+      imagePublicId: item.imagePublicId || "",
       isFeatured: Boolean(item.isFeatured),
       isAvailable: item.isAvailable !== false,
     });
     setEditingItemId(item.id);
     setIsFormOpen(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleImageFileChange = (event) => {
+    const file = event.target.files[0];
+
+    if (!file) {
+      return;
+    }
+
+    setSelectedImageFile(file);
   };
 
   const handleChange = (event) => {
@@ -123,11 +140,34 @@ function AdminMenuManager({
       return;
     }
 
+
+
+    let imageUrl = formValues.image || "/images/products/placeholder-product.jpg";
+    let imagePublicId = formValues.imagePublicId || "";
+
+    if (selectedImageFile) {
+      setIsUploadingImage(true);
+
+      const uploadResult = await onUploadMenuImage(selectedImageFile);
+
+      setIsUploadingImage(false);
+
+      if (!uploadResult.success) {
+        setFormError(uploadResult.message || "No se pudo subir la imagen.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      imageUrl = uploadResult.imageUrl;
+      imagePublicId = uploadResult.publicId;
+    }
+
     const itemPayload = {
       ...formValues,
       id: itemId,
       price: priceValue,
-      image: formValues.image || "/images/products/placeholder-product.jpg",
+      image: imageUrl,
+      imagePublicId,
     };
 
     let result;
@@ -248,8 +288,33 @@ function AdminMenuManager({
               ></textarea>
             </label>
 
+            <div className="admin-menu__field admin-menu__field--wide">
+              <span>Imagen del producto</span>
+
+              {formValues.image && (
+                <img
+                  className="admin-menu__image-preview"
+                  src={formValues.image}
+                  alt="Vista previa del producto"
+                />
+              )}
+
+              <input
+                name="imageFile"
+                type="file"
+                accept="image/*"
+                onChange={handleImageFileChange}
+              />
+
+              <small>
+                Sube una imagen nueva o conserva la imagen actual. Tamaño máximo recomendado:
+                10 MB. Si Cloudinary no está configurado, puedes seguir usando una ruta manual
+                abajo.
+              </small>
+            </div>
+
             <label className="admin-menu__field admin-menu__field--wide">
-              <span>Ruta de imagen</span>
+              <span>Ruta manual de imagen</span>
               <input
                 name="image"
                 type="text"
@@ -257,10 +322,6 @@ function AdminMenuManager({
                 onChange={handleChange}
                 placeholder="/images/products/nuevo-producto.jpg"
               />
-              <small>
-                Después esto será reemplazado por subida a Cloudinary u otro
-                servicio.
-              </small>
             </label>
 
             <label className="admin-menu__checkbox">
@@ -285,8 +346,8 @@ function AdminMenuManager({
           </div>
 
           <div className="admin-menu__form-actions">
-            <button className="button button--primary" type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Guardando..." : editingItemId ? "Guardar cambios" : "Guardar producto"}
+            <button className="button button--primary" type="submit" disabled={isSubmitting || isUploadingImage}>
+              {isSubmitting || isUploadingImage ? "Guardando..." : editingItemId ? "Guardar cambios" : "Guardar producto"}
             </button>
             <button
               className="button button--secondary"

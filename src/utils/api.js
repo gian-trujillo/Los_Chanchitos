@@ -179,3 +179,17 @@ export const createPaymentPreference = ({ orderId }) => {
     },
   });
 };
+
+export const uploadMenuImage = ({ file, token }) => {
+  const formData = new FormData();
+
+  formData.append("image", file);
+
+  return fetch(`${BASE_URL}/uploads/image`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData,
+  }).then(checkResponse);
+};

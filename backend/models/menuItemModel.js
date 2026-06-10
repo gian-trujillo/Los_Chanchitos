@@ -72,6 +72,11 @@ const menuItemSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    imagePublicId: {
+      type: String,
+      default: "",
+      trim: true,
+    },
     description: {
       type: String,
       default: "",

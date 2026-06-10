@@ -8,17 +8,18 @@ import AdminSettingsManager from "../../components/AdminSettingsManager/AdminSet
 // import { menuItems } from "../../data/menuData";
 
 function AdminDashboardPage({
-    adminUser,
-    menuItems,
-    inventoryItems,
-    restaurantSettings,
-    onCreateMenuItem,
-    onUpdateMenuItem,
-    onToggleMenuItemAvailability,
-    onDeleteMenuItem,
-    onUpdateInventoryItem,
-    onUpdateRestaurantSettings,
-    onLogout,
+  adminUser,
+  menuItems,
+  inventoryItems,
+  restaurantSettings,
+  onCreateMenuItem,
+  onUpdateMenuItem,
+  onToggleMenuItemAvailability,
+  onDeleteMenuItem,
+  onUpdateInventoryItem,
+  onUpdateRestaurantSettings,
+  onUploadMenuImage,
+  onLogout,
 }) {
     const [activeSection, setActiveSection] = useState("dashboard");
 
@@ -54,6 +55,7 @@ function AdminDashboardPage({
                     onUpdateMenuItem={onUpdateMenuItem}
                     onToggleMenuItemAvailability={onToggleMenuItemAvailability}
                     onDeleteMenuItem={onDeleteMenuItem}
+                    onUploadMenuImage={onUploadMenuImage}
                 />
             );
         }

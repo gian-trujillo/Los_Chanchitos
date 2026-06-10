@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const cloudinary = require("../config/cloudinary");
 const MenuItem = require("../models/menuItemModel");
 
 const getMenuItems = async (req, res, next) => {
@@ -31,6 +32,16 @@ const getMenuItemQuery = (identifier) => {
 
 const updateMenuItem = async (req, res, next) => {
   try {
+    const existingMenuItem = await MenuItem.findOne(
+      getMenuItemQuery(req.params.id)
+    );
+
+    if (!existingMenuItem) {
+      return res.status(404).send({
+        message: "Producto no encontrado",
+      });
+    }
+
     const menuItem = await MenuItem.findOneAndUpdate(
       getMenuItemQuery(req.params.id),
       req.body,
@@ -40,10 +51,17 @@ const updateMenuItem = async (req, res, next) => {
       }
     );
 
-    if (!menuItem) {
-      return res.status(404).send({
-        message: "Producto no encontrado",
-      });
+    const imageWasReplaced =
+      existingMenuItem.imagePublicId &&
+      req.body.imagePublicId &&
+      existingMenuItem.imagePublicId !== req.body.imagePublicId;
+
+    if (imageWasReplaced) {
+      try {
+        await cloudinary.uploader.destroy(existingMenuItem.imagePublicId);
+      } catch (cloudinaryError) {
+        console.error("Cloudinary old image delete error:", cloudinaryError);
+      }
     }
 
     return res.status(200).send(menuItem);
@@ -62,6 +80,14 @@ const deleteMenuItem = async (req, res, next) => {
       return res.status(404).send({
         message: "Producto no encontrado",
       });
+    }
+
+    if (menuItem.imagePublicId) {
+      try {
+        await cloudinary.uploader.destroy(menuItem.imagePublicId);
+      } catch (cloudinaryError) {
+        console.error("Cloudinary delete error:", cloudinaryError);
+      }
     }
 
     return res.status(200).send({

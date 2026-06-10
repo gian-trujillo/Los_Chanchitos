@@ -3,6 +3,18 @@ const errorHandler = (err, req, res, next) => {
 
   console.error(err);
 
+  if (err.name === "MulterError") {
+    if (err.code === "LIMIT_FILE_SIZE") {
+      return res.status(400).send({
+        message: "La imagen es demasiado grande. Máximo permitido: 10 MB.",
+      });
+    }
+
+    return res.status(400).send({
+      message: "Error al subir la imagen.",
+    });
+  }
+
   if (err.code === 11000) {
     return res.status(409).send({
       message: "Ya existe un documento con ese identificador.",

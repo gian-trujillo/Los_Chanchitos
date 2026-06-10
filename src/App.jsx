@@ -18,7 +18,7 @@ import FloatingWhatsApp from "./components/FloatingWhatsApp/FloatingWhatsApp";
 import { initialInventoryItems } from "./data/inventoryData";
 import { initialRestaurantSettings } from "./data/restaurantSettings";
 import { getClosedDayLabel, formatSettingsTime } from "./utils/restaurantFormatters";
-import { loginAdmin, getCurrentAdmin, getMenuItems, getInventoryItems, getRestaurantSettings, createMenuItem, updateMenuItem, deleteMenuItem, updateInventoryItem, updateRestaurantSettings, createOrder } from "./utils/api";
+import { loginAdmin, getCurrentAdmin, getMenuItems, getInventoryItems, getRestaurantSettings, createMenuItem, updateMenuItem, deleteMenuItem, updateInventoryItem, updateRestaurantSettings, createOrder, uploadMenuImage } from "./utils/api";
 import { saveAdminToken, getAdminToken, removeAdminToken } from "./utils/token";
 
 function App() {
@@ -545,6 +545,28 @@ function App() {
     }
   };
 
+  const handleUploadMenuImage = async (file) => {
+    const token = getAdminToken();
+
+    try {
+      const uploadedImage = await uploadMenuImage({
+        file,
+        token,
+      });
+
+      return {
+        success: true,
+        imageUrl: uploadedImage.imageUrl,
+        publicId: uploadedImage.publicId,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message || "No se pudo subir la imagen.",
+      };
+    }
+  };
+
   const handleUpdateInventoryItem = async (updatedInventoryItem) => {
     const token = getAdminToken();
 
@@ -703,6 +725,7 @@ function App() {
                 onDeleteMenuItem={handleDeleteMenuItem}
                 onUpdateInventoryItem={handleUpdateInventoryItem}
                 onUpdateRestaurantSettings={handleUpdateRestaurantSettings}
+                onUploadMenuImage={handleUploadMenuImage}
                 onLogout={handleAdminLogout}
               />
             ) : (
