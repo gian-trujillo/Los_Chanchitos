@@ -23,27 +23,47 @@ function AdminDashboardPage({
 }) {
     const [activeSection, setActiveSection] = useState("dashboard");
 
+    // const activeOrders = [];
+    const lowStockItems = inventoryItems.filter(
+    (item) => item.quantity <= item.lowStockThreshold
+    );
+    const unavailableMenuItems = menuItems.filter(
+    (item) => item.isAvailable === false
+    );
+    const visibleMenuItems = menuItems.filter((item) => item.isAvailable !== false);
+
     const dashboardCards = [
-        {
-            label: "Pedidos nuevos",
-            value: "0",
-            text: "Aquí aparecerán los pedidos pendientes.",
-        },
-        {
-            label: "Menú",
-            value: "Activo",
-            text: "Administra productos, precios e imágenes.",
-        },
-        {
-            label: "Inventario",
-            value: "Pendiente",
-            text: "Control de pollo, sirloin y complementos.",
-        },
-        {
-            label: "Estado",
-            value: "Abierto/Cerrado",
-            text: "Más adelante podrás pausar pedidos.",
-        },
+    {
+        label: "Productos activos",
+        value: String(visibleMenuItems.length),
+        text: "Productos visibles para clientes.",
+    },
+    {
+        label: "Productos ocultos",
+        value: String(unavailableMenuItems.length),
+        text: "Productos desactivados desde el panel.",
+    },
+    {
+        label: "Bajo inventario",
+        value: String(lowStockItems.length),
+        text:
+        lowStockItems.length > 0
+            ? lowStockItems.map((item) => item.name).join(", ")
+            : "Sin alertas de inventario.",
+    },
+    {
+        label: "Estado",
+        value: restaurantSettings.pauseOrders
+        ? "Pausado"
+        : restaurantSettings.forceClosed
+            ? "Cerrado"
+            : "Activo",
+        text: restaurantSettings.pauseOrders
+        ? "Los pedidos están pausados temporalmente."
+        : restaurantSettings.forceClosed
+            ? "El restaurante está forzado como cerrado."
+            : "El sitio puede recibir pedidos dentro del horario configurado.",
+    },
     ];
 
     const renderActiveSection = () => {
@@ -107,30 +127,38 @@ function AdminDashboardPage({
                 </section>
 
                 <section className="admin-dashboard__next">
-                    <h2>Siguientes módulos</h2>
+                    <h2>Acciones rápidas</h2>
 
                     <div className="admin-dashboard__tasks">
                         <article>
-                            <h3>Pedidos</h3>
-                            <p>
-                                Ver nuevos pedidos, cambiar estados, abrir WhatsApp y marcar
-                                pedidos como listos.
-                            </p>
+                        <h3>Revisar pedidos</h3>
+                        <p>
+                            Consulta pedidos activos, cambia estados y contacta clientes por
+                            WhatsApp.
+                        </p>
+                        <button type="button" onClick={() => setActiveSection("orders")}>
+                            Ir a pedidos
+                        </button>
                         </article>
 
                         <article>
-                            <h3>Menú</h3>
-                            <p>
-                                Crear, editar, eliminar productos y subir imágenes a la nube.
-                            </p>
+                        <h3>Actualizar inventario</h3>
+                        <p>
+                            Ajusta pollo, sirloin y complementos antes o durante el servicio.
+                        </p>
+                        <button type="button" onClick={() => setActiveSection("inventory")}>
+                            Ir a inventario
+                        </button>
                         </article>
 
                         <article>
-                            <h3>Inventario</h3>
-                            <p>
-                                Ajustar pollo asado, pollo al ataúd, sirloin en kg y
-                                complementos.
-                            </p>
+                        <h3>Editar menú</h3>
+                        <p>
+                            Cambia precios, imágenes, opciones, inventario usado y disponibilidad.
+                        </p>
+                        <button type="button" onClick={() => setActiveSection("menu")}>
+                            Ir al menú
+                        </button>
                         </article>
                     </div>
                 </section>

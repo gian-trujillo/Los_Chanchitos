@@ -107,6 +107,22 @@
   line-height: 1.7;
 }
 
+.admin-dashboard__tasks button {
+  width: fit-content;
+  min-height: 42px;
+  margin-top: var(--space-3);
+  padding: 0 var(--space-4);
+  border: 0;
+  border-radius: 999px;
+  background: var(--color-fire);
+  color: var(--color-white);
+  font-weight: 900;
+}
+
+.admin-dashboard__tasks button:hover {
+  transform: translateY(-2px);
+}
+
 @media screen and (max-width: 1020px) {
   .admin-dashboard__grid,
   .admin-dashboard__tasks {
