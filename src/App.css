@@ -4,3 +4,13 @@
     radial-gradient(circle at top left, rgba(232, 93, 36, 0.12), transparent 32rem),
     var(--color-cream);
 }
+
+.app__loading {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  background: var(--color-cream);
+  color: var(--color-charcoal);
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+}

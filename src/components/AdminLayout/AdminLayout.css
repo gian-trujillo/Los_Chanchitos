@@ -43,6 +43,33 @@
   font-weight: 800;
 }
 
+.admin-layout__user {
+  margin-bottom: var(--space-5);
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 244, 226, 0.08);
+}
+
+.admin-layout__user span,
+.admin-layout__user strong {
+  display: block;
+}
+
+.admin-layout__user span {
+  margin-bottom: var(--space-1);
+  color: rgba(255, 244, 226, 0.58);
+  font-size: var(--text-xs);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-layout__user strong {
+  color: var(--color-cream);
+  font-size: var(--text-sm);
+  word-break: break-word;
+}
+
 .admin-layout__nav {
   display: grid;
   gap: var(--space-2);

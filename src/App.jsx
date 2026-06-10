@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import "./App.css";
 import { saveOrderToStorage } from "./utils/orderStorage";
@@ -18,12 +18,16 @@ import FloatingWhatsApp from "./components/FloatingWhatsApp/FloatingWhatsApp";
 import { initialInventoryItems } from "./data/inventoryData";
 import { initialRestaurantSettings } from "./data/restaurantSettings";
 import { getClosedDayLabel, formatSettingsTime } from "./utils/restaurantFormatters";
+import { loginAdmin, getCurrentAdmin } from "./utils/api";
+import { saveAdminToken, getAdminToken, removeAdminToken } from "./utils/token";
 
 function App() {
   const [cartItems, setCartItems] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [submittedOrder, setSubmittedOrder] = useState(null);
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+  const [adminUser, setAdminUser] = useState(null);
+  const [isCheckingAdminSession, setIsCheckingAdminSession] = useState(true);
   const [menuItems, setMenuItems] = useState(initialMenuItems);
   const [inventoryItems, setInventoryItems] = useState(initialInventoryItems);
   const [restaurantSettings, setRestaurantSettings] = useState(initialRestaurantSettings);
@@ -43,6 +47,32 @@ function App() {
   const featuredPackages = visibleMenuItems.filter(
     (item) => item.category === "Paquetes" && item.isFeatured
   );
+
+  useEffect(() => {
+    const checkAdminSession = async () => {
+      const token = getAdminToken();
+
+      if (!token) {
+        setIsCheckingAdminSession(false);
+        return;
+      }
+
+      try {
+        const data = await getCurrentAdmin(token);
+
+        setAdminUser(data.admin);
+        setIsAdminLoggedIn(true);
+      } catch {
+        removeAdminToken();
+        setAdminUser(null);
+        setIsAdminLoggedIn(false);
+      } finally {
+        setIsCheckingAdminSession(false);
+      }
+    };
+
+    checkAdminSession();
+  }, []);
 
   const handleNavigateHome = () => {
     navigate("/");
@@ -334,22 +364,31 @@ function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleAdminLogin = ({ email, password }) => {
-    const mockEmail = "admin@loschanchitos.com";
-    const mockPassword = "admin123";
+  const handleAdminLogin = async ({ email, password }) => {
+    try {
+      const data = await loginAdmin({ email, password });
 
-    if (email !== mockEmail || password !== mockPassword) {
-      return false;
+      saveAdminToken(data.token);
+      setAdminUser(data.admin);
+      setIsAdminLoggedIn(true);
+
+      navigate("/admin/dashboard");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
+      return {
+        success: true,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message || "No se pudo iniciar sesión.",
+      };
     }
-
-    setIsAdminLoggedIn(true);
-    navigate("/admin/dashboard");
-    window.scrollTo({ top: 0, behavior: "smooth" });
-
-    return true;
   };
 
   const handleAdminLogout = () => {
+    removeAdminToken();
+    setAdminUser(null);
     setIsAdminLoggedIn(false);
     navigate("/admin/login");
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -484,18 +523,21 @@ function App() {
         <Route
           path="/admin/dashboard"
           element={
-            isAdminLoggedIn ? (
+            isCheckingAdminSession ? (
+              <div className="app__loading">Verificando sesión...</div>
+            ) : isAdminLoggedIn ? (
               <AdminDashboardPage
+                adminUser={adminUser}
                 menuItems={menuItems}
                 inventoryItems={inventoryItems}
+                restaurantSettings={restaurantSettings}
                 onCreateMenuItem={handleCreateMenuItem}
                 onUpdateMenuItem={handleUpdateMenuItem}
                 onToggleMenuItemAvailability={handleToggleMenuItemAvailability}
                 onDeleteMenuItem={handleDeleteMenuItem}
                 onUpdateInventoryItem={handleUpdateInventoryItem}
-                onLogout={handleAdminLogout}
-                restaurantSettings={restaurantSettings}
                 onUpdateRestaurantSettings={handleUpdateRestaurantSettings}
+                onLogout={handleAdminLogout}
               />
             ) : (
               <AdminLoginPage

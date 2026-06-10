@@ -2,6 +2,7 @@ import "./AdminLayout.css";
 
 function AdminLayout({
   children,
+  adminUser,
   activeSection = "dashboard",
   onSectionChange,
   onLogout,
@@ -39,6 +40,13 @@ function AdminLayout({
             <p>Admin</p>
           </div>
         </div>
+
+        {adminUser && (
+          <div className="admin-layout__user">
+            <span>Sesión iniciada</span>
+            <strong>{adminUser.email}</strong>
+          </div>
+        )}
 
         <nav className="admin-layout__nav" aria-label="Navegación de admin">
           {navItems.map((item) => (

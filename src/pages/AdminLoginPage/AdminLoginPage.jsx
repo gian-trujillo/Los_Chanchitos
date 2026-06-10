@@ -7,6 +7,7 @@ function AdminLoginPage({ isAdminLoggedIn, onLogin }) {
     password: "",
   });
   const [loginError, setLoginError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -19,14 +20,18 @@ function AdminLoginPage({ isAdminLoggedIn, onLogin }) {
     setLoginError("");
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const loginWasSuccessful = onLogin(formValues);
+    setIsSubmitting(true);
 
-    if (!loginWasSuccessful) {
-      setLoginError("Correo o contraseña incorrectos.");
+    const loginResult = await onLogin(formValues);
+
+    if (!loginResult.success) {
+      setLoginError(loginResult.message || "Correo o contraseña incorrectos.");
     }
+
+    setIsSubmitting(false);
   };
 
   return (
@@ -43,15 +48,11 @@ function AdminLoginPage({ isAdminLoggedIn, onLogin }) {
         <div className="admin-login__header">
           <p className="section__eyebrow">Admin</p>
           <h1>Iniciar sesión</h1>
-          <p>
-            Accede al panel para administrar pedidos, menú e inventario.
-          </p>
+          <p>Accede al panel para administrar pedidos, menú e inventario.</p>
         </div>
 
         {isAdminLoggedIn && (
-          <p className="admin-login__notice">
-            Ya tienes una sesión activa.
-          </p>
+          <p className="admin-login__notice">Ya tienes una sesión activa.</p>
         )}
 
         <form className="admin-login__form" onSubmit={handleSubmit}>
@@ -81,8 +82,12 @@ function AdminLoginPage({ isAdminLoggedIn, onLogin }) {
 
           {loginError && <p className="admin-login__error">{loginError}</p>}
 
-          <button className="button button--primary admin-login__button" type="submit">
-            Entrar al panel
+          <button
+            className="button button--primary admin-login__button"
+            type="submit"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Entrando..." : "Entrar al panel"}
           </button>
         </form>
 
