@@ -53,3 +53,21 @@ export const getCurrentAdmin = (token) => {
     token,
   });
 };
+
+export const getMenuItems = () => {
+  return request({
+    endpoint: "/menu",
+  });
+};
+
+export const getInventoryItems = () => {
+  return request({
+    endpoint: "/inventory",
+  });
+};
+
+export const getRestaurantSettings = () => {
+  return request({
+    endpoint: "/settings",
+  });
+};

@@ -18,7 +18,7 @@ import FloatingWhatsApp from "./components/FloatingWhatsApp/FloatingWhatsApp";
 import { initialInventoryItems } from "./data/inventoryData";
 import { initialRestaurantSettings } from "./data/restaurantSettings";
 import { getClosedDayLabel, formatSettingsTime } from "./utils/restaurantFormatters";
-import { loginAdmin, getCurrentAdmin } from "./utils/api";
+import { loginAdmin, getCurrentAdmin, getMenuItems, getInventoryItems, getRestaurantSettings } from "./utils/api";
 import { saveAdminToken, getAdminToken, removeAdminToken } from "./utils/token";
 
 function App() {
@@ -31,6 +31,8 @@ function App() {
   const [menuItems, setMenuItems] = useState(initialMenuItems);
   const [inventoryItems, setInventoryItems] = useState(initialInventoryItems);
   const [restaurantSettings, setRestaurantSettings] = useState(initialRestaurantSettings);
+  // const [isLoadingAppData, setIsLoadingAppData] = useState(true);
+  const [appDataError, setAppDataError] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith("/admin");
@@ -72,6 +74,30 @@ function App() {
     };
 
     checkAdminSession();
+  }, []);
+
+  useEffect(() => {
+    const loadAppData = async () => {
+      try {
+        const [menuData, inventoryData, settingsData] = await Promise.all([
+          getMenuItems(),
+          getInventoryItems(),
+          getRestaurantSettings(),
+        ]);
+
+        setMenuItems(menuData);
+        setInventoryItems(inventoryData);
+        setRestaurantSettings(settingsData);
+        setAppDataError("");
+      } catch (error) {
+        console.error(error);
+        setAppDataError(
+          "No se pudo cargar la información actualizada. Mostrando datos locales."
+        );
+      }
+    };
+
+    loadAppData();
   }, []);
 
   const handleNavigateHome = () => {
@@ -444,6 +470,12 @@ function App() {
         onStatusClick={handleOpenStatusLookup}
         onSectionClick={handleNavigateToHomeSection}
       />
+
+      {appDataError && !isAdminRoute && (
+        <div className="app__data-warning">
+          {appDataError}
+        </div>
+      )}
 
       <Routes>
         <Route

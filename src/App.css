@@ -5,6 +5,17 @@
     var(--color-cream);
 }
 
+.app__data-warning {
+  margin: var(--space-4) auto 0;
+  width: min(100% - var(--space-4) * 2, var(--max-width));
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  background: rgba(232, 93, 36, 0.12);
+  color: var(--color-fire-dark);
+  font-size: var(--text-sm);
+  font-weight: 800;
+}
+
 .app__loading {
   display: grid;
   place-items: center;
