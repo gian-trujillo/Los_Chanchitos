@@ -15,6 +15,8 @@ import OrderStatusPage from "./pages/OrderStatusPage/OrderStatusPage";
 import AdminLoginPage from "./pages/AdminLoginPage/AdminLoginPage";
 import AdminDashboardPage from "./pages/AdminDashboardPage/AdminDashboardPage";
 import { initialInventoryItems } from "./data/inventoryData";
+import { initialRestaurantSettings } from "./data/restaurantSettings";
+import { getClosedDayLabel, formatSettingsTime } from "./utils/restaurantFormatters";
 
 function App() {
   const [cartItems, setCartItems] = useState([]);
@@ -23,6 +25,7 @@ function App() {
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const [menuItems, setMenuItems] = useState(initialMenuItems);
   const [inventoryItems, setInventoryItems] = useState(initialInventoryItems);
+  const [restaurantSettings, setRestaurantSettings] = useState(initialRestaurantSettings);
   const navigate = useNavigate();
 
   const inventoryAwareMenuItems = addInventoryStatusToMenuItems(
@@ -53,50 +56,105 @@ function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const getMinutesFromTime = (time) => {
+    const [hours, minutes] = time.split(":").map(Number);
+    return hours * 60 + minutes;
+  };
+
+  const getDayName = (dayNumber) => {
+    const days = [
+      "domingo",
+      "lunes",
+      "martes",
+      "miércoles",
+      "jueves",
+      "viernes",
+      "sábado",
+    ];
+
+    return days[dayNumber];
+  };
+
+  // const formatTime = (time) => {
+  //   const [hours, minutes] = time.split(":").map(Number);
+  //   const date = new Date();
+
+  //   date.setHours(hours);
+  //   date.setMinutes(minutes);
+
+  //   return date.toLocaleTimeString("es-MX", {
+  //     hour: "numeric",
+  //     minute: "2-digit",
+  //   });
+  // };
+
   const getRestaurantStatus = () => {
     const now = new Date();
-    const day = now.getDay();
-    const hour = now.getHours();
-    const minutes = now.getMinutes();
-    const currentMinutes = hour * 60 + minutes;
+    const currentDayName = getDayName(now.getDay());
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
-    const openingMinutes = 12 * 60;
-    const closingMinutes = 17 * 60;
+    const openingMinutes = getMinutesFromTime(restaurantSettings.openingTime);
+    const closingMinutes = getMinutesFromTime(restaurantSettings.closingTime);
 
-    const isTuesday = day === 2;
+    const isClosedDay = currentDayName === restaurantSettings.closedDay;
+
+    const isWithinHours =
+      currentMinutes >= openingMinutes && currentMinutes < closingMinutes;
+
     const isOpen =
-      !isTuesday &&
-      currentMinutes >= openingMinutes &&
-      currentMinutes < closingMinutes;
+      !isClosedDay &&
+      !restaurantSettings.forceClosed &&
+      !restaurantSettings.pauseOrders &&
+      isWithinHours;
 
-    if (isTuesday) {
+    const openingLabel = formatSettingsTime(restaurantSettings.openingTime);
+    const closingLabel = formatSettingsTime(restaurantSettings.closingTime);
+    const closedDayLabel = getClosedDayLabel(restaurantSettings.closedDay);
+
+    if (restaurantSettings.pauseOrders) {
       return {
-        isOpen,
+        isOpen: false,
+        label: "Pedidos pausados",
+        detail: "El restaurante pausó pedidos temporalmente.",
+      };
+    }
+
+    if (restaurantSettings.forceClosed) {
+      return {
+        isOpen: false,
+        label: "Cerrado por ahora",
+        detail: `Horario regular: ${openingLabel} a ${closingLabel}.`,
+      };
+    }
+
+    if (isClosedDay) {
+      return {
+        isOpen: false,
         label: "Cerrado hoy",
-        detail: "Cerrado los martes",
+        detail: `Cerrado los ${closedDayLabel}.`,
       };
     }
 
     if (currentMinutes < openingMinutes) {
       return {
-        isOpen,
+        isOpen: false,
         label: "Cerrado por ahora",
-        detail: "Abrimos hoy a las 12:00 PM",
+        detail: `Abrimos hoy a las ${openingLabel}.`,
       };
     }
 
     if (currentMinutes >= closingMinutes) {
       return {
-        isOpen,
+        isOpen: false,
         label: "Cerrado por ahora",
-        detail: "Volvemos a abrir mañana a las 12:00 PM",
+        detail: `Volvemos a abrir a las ${openingLabel}.`,
       };
     }
 
     return {
       isOpen,
       label: "Abierto ahora",
-      detail: "Abierto hasta las 5:00 PM",
+      detail: `Abierto hasta las ${closingLabel}.`,
     };
   };
 
@@ -293,6 +351,10 @@ function App() {
     );
   };
 
+  const handleUpdateRestaurantSettings = (updatedSettings) => {
+    setRestaurantSettings(updatedSettings);
+  };
+
   return (
     <div className="app">
       <Header
@@ -313,6 +375,7 @@ function App() {
               restaurantStatus={restaurantStatus}
               onOrderClick={handleOpenOrderPage}
               onAddToCart={handleAddToCartAndOpenMenu}
+              restaurantSettings={restaurantSettings}
             />
           }
         />
@@ -323,6 +386,7 @@ function App() {
             <OrderPage
               menuItems={visibleMenuItems}
               restaurantStatus={restaurantStatus}
+              restaurantSettings={restaurantSettings}
               onBackHome={handleNavigateHome}
               onAddToCart={handleAddToCart}
             />
@@ -340,6 +404,7 @@ function App() {
               onBackToMenu={handleOpenOrderPage}
               onBackToCart={() => setIsCartOpen(true)}
               onSubmitOrder={handleSubmitOrder}
+              restaurantSettings={restaurantSettings}
             />
           }
         />
@@ -388,6 +453,8 @@ function App() {
                 onDeleteMenuItem={handleDeleteMenuItem}
                 onUpdateInventoryItem={handleUpdateInventoryItem}
                 onLogout={handleAdminLogout}
+                restaurantSettings={restaurantSettings}
+                onUpdateRestaurantSettings={handleUpdateRestaurantSettings}
               />
             ) : (
               <AdminLoginPage
@@ -400,6 +467,7 @@ function App() {
       </Routes>
 
       <Footer
+        restaurantSettings={restaurantSettings}
         onNavigateHome={handleNavigateHome}
         onOrderClick={handleOpenOrderPage}
         onStatusClick={handleOpenStatusLookup}

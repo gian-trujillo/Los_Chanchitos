@@ -1,0 +1,151 @@
+.admin-settings {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.admin-settings__header,
+.admin-settings__form {
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.64);
+  box-shadow: var(--shadow-card);
+}
+
+.admin-settings__header {
+  padding: var(--space-6);
+}
+
+.admin-settings__header h2,
+.admin-settings__block h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+}
+
+.admin-settings__header p {
+  max-width: 760px;
+  margin: var(--space-3) 0 0;
+  color: var(--color-muted);
+  line-height: 1.7;
+}
+
+.admin-settings__form {
+  display: grid;
+  gap: var(--space-5);
+  padding: var(--space-6);
+}
+
+.admin-settings__block {
+  padding-bottom: var(--space-5);
+  border-bottom: 1px solid rgba(31, 26, 23, 0.1);
+}
+
+.admin-settings__block:last-of-type {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.admin-settings__toggles,
+.admin-settings__grid {
+  margin-top: var(--space-5);
+}
+
+.admin-settings__toggles {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.admin-settings__toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid rgba(31, 26, 23, 0.12);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.48);
+}
+
+.admin-settings__toggle input {
+  width: 18px;
+  height: 18px;
+  margin-top: 0.25rem;
+  accent-color: var(--color-fire);
+}
+
+.admin-settings__toggle strong,
+.admin-settings__toggle small {
+  display: block;
+}
+
+.admin-settings__toggle small {
+  margin-top: var(--space-1);
+  color: var(--color-muted);
+  line-height: 1.5;
+}
+
+.admin-settings__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.admin-settings__field {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.admin-settings__field--wide {
+  grid-column: 1 / -1;
+}
+
+.admin-settings__field span {
+  font-size: var(--text-sm);
+  font-weight: 900;
+}
+
+.admin-settings__field input,
+.admin-settings__field select,
+.admin-settings__field textarea {
+  width: 100%;
+  border: 1px solid rgba(31, 26, 23, 0.14);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--color-charcoal);
+}
+
+.admin-settings__field input,
+.admin-settings__field select {
+  height: 48px;
+  padding: 0 var(--space-4);
+}
+
+.admin-settings__field textarea {
+  resize: vertical;
+  padding: var(--space-4);
+}
+
+.admin-settings__field small {
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+
+.admin-settings__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+@media screen and (max-width: 720px) {
+  .admin-settings__header,
+  .admin-settings__form {
+    padding: var(--space-4);
+  }
+
+  .admin-settings__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-settings__actions .button {
+    width: 100%;
+  }
+}

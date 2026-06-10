@@ -1,10 +1,6 @@
 import { useState } from "react";
 import "./OrderStatusPage.css";
-import {
-  findStoredOrder,
-  findStoredOrderById,
-  getOrderStatusStep,
-} from "../../utils/orderStorage";
+import { findStoredOrder, findStoredOrderById, getOrderStatusStep } from "../../utils/orderStorage";
 
 function OrderStatusPage({ onBackHome, onBackToMenu }) {
     const [formValues, setFormValues] = useState({

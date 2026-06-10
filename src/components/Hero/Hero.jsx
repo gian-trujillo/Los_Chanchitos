@@ -1,6 +1,11 @@
 import "./Hero.css";
+import { getClosedDayLabel, formatSettingsTime } from "../../utils/restaurantFormatters";
 
-function Hero({ heroItem, restaurantStatus, onOrderClick, onAddToCart }) {
+function Hero({ heroItem, restaurantStatus, onOrderClick, onAddToCart, restaurantSettings }) {
+  const openingLabel = formatSettingsTime(restaurantSettings.openingTime);
+  const closingLabel = formatSettingsTime(restaurantSettings.closingTime);
+  const closedDayLabel = getClosedDayLabel(restaurantSettings.closedDay);
+
   return (
     <section className="hero section" id="inicio">
       <div className="hero__inner section__inner">
@@ -13,7 +18,7 @@ function Hero({ heroItem, restaurantStatus, onOrderClick, onAddToCart }) {
 
           <p className="hero__text">
             Haz tu pedido en línea en Los Chanchitos y pasa por él recién hecho.
-            Paga al recoger o elige pago en línea cuando esté disponible.
+            Tiempo estimado de preparación: {restaurantSettings.estimatedPrepTime} minutos.
           </p>
 
           <div className="hero__actions">
@@ -39,8 +44,8 @@ function Hero({ heroItem, restaurantStatus, onOrderClick, onAddToCart }) {
             >
               {restaurantStatus.label}
             </span>
-            <span>12:00 PM a 5:00 PM</span>
-            <span>Cerrado los martes</span>
+            <span>{openingLabel} a {closingLabel}</span>
+            <span>Cerrado los {closedDayLabel}</span>
             <span>Pedido mínimo: pollo, sirloin o paquete</span>
           </div>
         </div>

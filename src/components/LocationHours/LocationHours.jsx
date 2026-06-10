@@ -1,6 +1,11 @@
 import "./LocationHours.css";
+import { getClosedDayLabel, formatSettingsTime } from "../../utils/restaurantFormatters";
 
-function LocationHours({ restaurantStatus }) {
+function LocationHours({ restaurantStatus, restaurantSettings }) {
+  const openingLabel = formatSettingsTime(restaurantSettings.openingTime);
+  const closingLabel = formatSettingsTime(restaurantSettings.closingTime);
+  const closedDayLabel = getClosedDayLabel(restaurantSettings.closedDay);
+
   return (
     <section className="location section" id="ubicacion">
       <div className="location__inner section__inner">
@@ -8,8 +13,7 @@ function LocationHours({ restaurantStatus }) {
           <p className="section__eyebrow">Ubicación</p>
           <h2 className="section__title">Pide y recoge en Monterrey.</h2>
           <p className="section__text">
-            Estamos en Av. Prof. Moises Saenz 1112B, Leones, 64600 Monterrey,
-            N.L.
+            Estamos en {restaurantSettings.address}
           </p>
 
           <div className="location__actions">
@@ -29,10 +33,9 @@ function LocationHours({ restaurantStatus }) {
 
         <aside className="location__card">
           <span className="badge location__badge">Horario</span>
-          <h3>12:00 PM - 5:00 PM</h3>
+          <h3>{openingLabel} - {closingLabel}</h3>
           <p>
-            Abierto de miércoles a lunes. Cerrado los martes. Los pedidos para
-            recoger se aceptan durante horario de servicio.
+            Cerrado los {closedDayLabel}. Los pedidos para recoger se aceptan durante horario de servicio.
           </p>
 
           <div

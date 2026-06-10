@@ -5,7 +5,7 @@ import MenuPreview from "../../components/MenuPreview/MenuPreview";
 import HowItWorks from "../../components/HowItWorks/HowItWorks";
 import LocationHours from "../../components/LocationHours/LocationHours";
 
-function HomePage({ featuredPackages, menuItems, restaurantStatus, onOrderClick, onAddToCart }) {
+function HomePage({ featuredPackages, menuItems, restaurantStatus, restaurantSettings, onOrderClick, onAddToCart }) {
     const previewItems = menuItems.filter((item) =>
         [
             "pollo-asado",
@@ -23,11 +23,11 @@ function HomePage({ featuredPackages, menuItems, restaurantStatus, onOrderClick,
 
     return (
         <>
-        <Hero heroItem={heroItem} restaurantStatus={restaurantStatus} onOrderClick={onOrderClick} onAddToCart={onAddToCart} />
+        <Hero heroItem={heroItem} restaurantStatus={restaurantStatus} onOrderClick={onOrderClick} onAddToCart={onAddToCart} restaurantSettings={restaurantSettings} />
         <FeaturedPackages packages={featuredPackages} onAddToCart={onAddToCart} />
         <MenuPreview menuItems={previewItems} onOrderClick={onOrderClick} onAddToCart={onAddToCart} />
         <HowItWorks />
-        <LocationHours restaurantStatus={restaurantStatus} />
+        <LocationHours restaurantStatus={restaurantStatus} restaurantSettings={restaurantSettings} />
         </>
     );
 }

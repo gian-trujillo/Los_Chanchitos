@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import "./OrderPage.css";
+import { getClosedDayLabel, formatSettingsTime } from "../../utils/restaurantFormatters";
 
 function OrderPage({
   menuItems,
   restaurantStatus,
+  restaurantSettings,
   onBackHome,
   onAddToCart,
 }) {
@@ -24,6 +26,10 @@ function OrderPage({
   const formatPrice = (price) => {
     return typeof price === "number" ? `$${price} MXN` : price;
   };
+
+    const openingLabel = formatSettingsTime(restaurantSettings.openingTime);
+    const closingLabel = formatSettingsTime(restaurantSettings.closingTime);
+    const closedDayLabel = getClosedDayLabel(restaurantSettings.closedDay);
 
   const handleOptionChange = (itemId, optionId) => {
     setSelectedOptions((currentOptions) => ({
@@ -75,8 +81,8 @@ function OrderPage({
 
           <aside className="order-page__info">
             <span className="badge">Horario</span>
-            <h2>12:00 PM - 5:00 PM</h2>
-            <p>Cerrado los martes.</p>
+            <h2>{openingLabel} - {closingLabel}</h2>
+            <p>Cerrado los {closedDayLabel}.</p>
 
             <div
               className={`order-page__status ${

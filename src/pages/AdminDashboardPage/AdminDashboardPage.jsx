@@ -4,9 +4,21 @@ import AdminLayout from "../../components/AdminLayout/AdminLayout";
 import AdminMenuManager from "../../components/AdminMenuManager/AdminMenuManager";
 import AdminInventoryManager from "../../components/AdminInventoryManager/AdminInventoryManager";
 import AdminOrdersManager from "../../components/AdminOrdersManager/AdminOrdersManager";
+import AdminSettingsManager from "../../components/AdminSettingsManager/AdminSettingsManager";
 // import { menuItems } from "../../data/menuData";
 
-function AdminDashboardPage({   menuItems, inventoryItems, onCreateMenuItem, onUpdateMenuItem, onToggleMenuItemAvailability, onDeleteMenuItem, onUpdateInventoryItem, onLogout }) {
+function AdminDashboardPage({
+  menuItems,
+  inventoryItems,
+  restaurantSettings,
+  onCreateMenuItem,
+  onUpdateMenuItem,
+  onToggleMenuItemAvailability,
+  onDeleteMenuItem,
+  onUpdateInventoryItem,
+  onUpdateRestaurantSettings,
+  onLogout,
+}) {
   const [activeSection, setActiveSection] = useState("dashboard");
 
   const dashboardCards = [
@@ -60,14 +72,10 @@ function AdminDashboardPage({   menuItems, inventoryItems, onCreateMenuItem, onU
 
     if (activeSection === "settings") {
         return (
-            <section className="admin-dashboard__placeholder">
-            <p className="section__eyebrow">Configuración</p>
-            <h2>Ajustes del restaurante</h2>
-            <p>
-                Aquí configuraremos horario, abierto/cerrado, WhatsApp y tiempo
-                estimado de preparación.
-            </p>
-            </section>
+            <AdminSettingsManager
+            restaurantSettings={restaurantSettings}
+            onUpdateRestaurantSettings={onUpdateRestaurantSettings}
+            />
         );
     }
 

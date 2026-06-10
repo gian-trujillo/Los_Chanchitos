@@ -1,11 +1,13 @@
 import { useState } from "react";
 import "./CheckoutPage.css";
+import { getClosedDayLabel, formatSettingsTime } from "../../utils/restaurantFormatters";
 
 function CheckoutPage({
   cartItems,
   cartTotal,
   hasMainItem,
   restaurantStatus,
+  restaurantSettings,
   onBackToMenu,
   onBackToCart,
   onSubmitOrder,
@@ -20,27 +22,38 @@ function CheckoutPage({
     });
 
     const isCartEmpty = cartItems.length === 0;
+    const getMinutesFromTime = (time) => {
+    const [hours, minutes] = time.split(":").map(Number);
+    return hours * 60 + minutes;
+    };
+    const openingLabel = formatSettingsTime(restaurantSettings.openingTime);
+    const closingLabel = formatSettingsTime(restaurantSettings.closingTime);
+    const lastPickupLabel = formatSettingsTime(restaurantSettings.lastPickupTime);
+    const closedDayLabel = getClosedDayLabel(restaurantSettings.closedDay);
+
     const isScheduledPickup = formValues.pickupType === "scheduled";
 
     const isScheduledPickupTimeValid = () => {
-        if (!isScheduledPickup) {
-            return true;
-        }
+    if (!isScheduledPickup) {
+        return true;
+    }
 
-        if (!formValues.pickupTime) {
-            return false;
-        }
+    if (!formValues.pickupTime) {
+        return false;
+    }
 
-        const [hours, minutes] = formValues.pickupTime.split(":").map(Number);
-        const selectedMinutes = hours * 60 + minutes;
+    const [hours, minutes] = formValues.pickupTime.split(":").map(Number);
+    const selectedMinutes = hours * 60 + minutes;
 
-        const openingMinutes = 12 * 60;
-        const lastPickupMinutes = 16 * 60 + 45;
+    const openingMinutes = getMinutesFromTime(restaurantSettings.openingTime);
+    const lastPickupMinutes = getMinutesFromTime(
+        restaurantSettings.lastPickupTime
+    );
 
-        return (
-            selectedMinutes >= openingMinutes &&
-            selectedMinutes <= lastPickupMinutes
-        );
+    return (
+        selectedMinutes >= openingMinutes &&
+        selectedMinutes <= lastPickupMinutes
+    );
     };
 
     const pickupTimeIsValid = isScheduledPickupTimeValid();
@@ -93,8 +106,8 @@ function CheckoutPage({
                 <section className="checkout__block">
                     {!restaurantIsOpen && (
                         <p className="checkout__warning">
-                            El restaurante está cerrado en este momento. Los pedidos se aceptan de
-                            miércoles a lunes, de 12:00 PM a 5:00 PM.
+                            El restaurante está cerrado en este momento. Los pedidos se aceptan dentro del
+                            horario de {openingLabel} a {closingLabel}, excepto los {closedDayLabel}.
                         </p>
                     )}
                     <h2>Datos del cliente</h2>
@@ -151,7 +164,7 @@ function CheckoutPage({
                             onChange={handleChange}
                         />
                         <span>
-                            <strong>Programar hora</strong>
+                            <strong>Programar pedido</strong>
                             <small>Elige una hora de recolección dentro del horario.</small>
                         </span>
                         </label>
@@ -163,8 +176,8 @@ function CheckoutPage({
                         <input
                             name="pickupTime"
                             type="time"
-                            min="12:00"
-                            max="16:45"
+                            min={restaurantSettings.openingTime}
+                            max={restaurantSettings.lastPickupTime}
                             value={formValues.pickupTime}
                             onChange={handleChange}
                         />
@@ -172,8 +185,8 @@ function CheckoutPage({
                     )}
 
                     <p className="checkout__note">
-                        Horario: 12:00 PM a 5:00 PM. Cerrado los martes. Última recolección sugerida:
-                        4:45 PM.
+                        Horario: {openingLabel} a {closingLabel}. Cerrado los {closedDayLabel}.
+                        Última recolección sugerida: {lastPickupLabel}.
                     </p>
                     {isScheduledPickup && !pickupTimeIsValid && (
                         <p className="checkout__warning">
