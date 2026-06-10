@@ -65,7 +65,9 @@ const validateAndReduceInventory = async (items) => {
     return map;
   }, {});
 
-  const missingItem = inventoryIds.find((inventoryId) => !inventoryMap[inventoryId]);
+  const missingItem = inventoryIds.find(
+    (inventoryId) => !inventoryMap[inventoryId]
+  );
 
   if (missingItem) {
     const error = new Error(`Inventario no encontrado: ${missingItem}`);
@@ -73,31 +75,60 @@ const validateAndReduceInventory = async (items) => {
     throw error;
   }
 
-  const insufficientItem = inventoryIds.find((inventoryId) => {
-    const inventoryItem = inventoryMap[inventoryId];
-    return inventoryItem.quantity < usageTotals[inventoryId];
-  });
+  const updatedInventoryItems = [];
 
-  if (insufficientItem) {
-    const error = new Error(
-      `Inventario insuficiente para ${inventoryMap[insufficientItem].name}`
-    );
-    error.statusCode = 409;
-    throw error;
-  }
+  try {
+    for (const inventoryId of inventoryIds) {
+      const requiredAmount = usageTotals[inventoryId];
 
-  await Promise.all(
-    inventoryIds.map((inventoryId) =>
-      InventoryItem.updateOne(
-        { id: inventoryId },
+      const updatedInventoryItem = await InventoryItem.findOneAndUpdate(
+        {
+          id: inventoryId,
+          quantity: {
+            $gte: requiredAmount,
+          },
+        },
         {
           $inc: {
-            quantity: -usageTotals[inventoryId],
+            quantity: -requiredAmount,
           },
+        },
+        {
+          new: true,
         }
-      )
-    )
-  );
+      );
+
+      if (!updatedInventoryItem) {
+        const error = new Error(
+          `Inventario insuficiente para ${inventoryMap[inventoryId].name}`
+        );
+        error.statusCode = 409;
+        throw error;
+      }
+
+      updatedInventoryItems.push({
+        inventoryId,
+        amount: requiredAmount,
+      });
+    }
+  } catch (error) {
+    if (updatedInventoryItems.length > 0) {
+      await Promise.all(
+        updatedInventoryItems.map((item) =>
+          InventoryItem.updateOne(
+            { id: item.inventoryId },
+            {
+              $inc: {
+                quantity: item.amount,
+              },
+            }
+          )
+        )
+      );
+    }
+
+    throw error;
+  }
 };
 
 const restoreInventoryForOrder = async (items) => {
