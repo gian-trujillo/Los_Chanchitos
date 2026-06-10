@@ -3,6 +3,7 @@ import "./AdminMenuManager.css";
 
 function AdminMenuManager({
   menuItems,
+  inventoryItems,
   onCreateMenuItem,
   onUpdateMenuItem,
   onToggleMenuItemAvailability,
@@ -18,6 +19,8 @@ function AdminMenuManager({
     description: "",
     image: "",
     imagePublicId: "",
+    options: [],
+    inventoryUsage: [],
     isFeatured: false,
     isAvailable: true,
   };
@@ -88,6 +91,14 @@ function AdminMenuManager({
       description: item.description || "",
       image: item.image || "",
       imagePublicId: item.imagePublicId || "",
+      options: (item.options || []).map((option) => ({
+        ...option,
+        tempId: crypto.randomUUID(),
+      })),
+      inventoryUsage: (item.inventoryUsage || []).map((usage) => ({
+        ...usage,
+        tempId: crypto.randomUUID(),
+      })),
       isFeatured: Boolean(item.isFeatured),
       isAvailable: item.isAvailable !== false,
     });
@@ -125,15 +136,14 @@ function AdminMenuManager({
     const generatedId = createSlug(formValues.name);
     const itemId = editingItemId || generatedId;
 
-    const priceValue =
-      formValues.options && formValues.options.length > 0
-        ? formValues.price
-        : Number(formValues.price);
+    const hasOptions = formValues.options.length > 0;
+
+    const priceValue = hasOptions ? formValues.price : Number(formValues.price);
 
     if (
       !formValues.name ||
       !formValues.category ||
-      (!formValues.options && Number.isNaN(priceValue))
+      (!hasOptions && Number.isNaN(priceValue))
     ) {
       setFormError("Completa los campos requeridos correctamente.");
       setIsSubmitting(false);
@@ -162,12 +172,30 @@ function AdminMenuManager({
       imagePublicId = uploadResult.publicId;
     }
 
+    const cleanOptions = formValues.options
+      .filter((option) => option.name && option.price !== "")
+      .map((option) => ({
+        id: option.id || createSlug(option.name),
+        name: option.name,
+        price: Number(option.price),
+      }));
+
+    const cleanInventoryUsage = formValues.inventoryUsage
+      .filter((usage) => usage.inventoryId && usage.amount !== "")
+      .map((usage) => ({
+        inventoryId: usage.inventoryId,
+        amount: Number(usage.amount),
+      }));
+
     const itemPayload = {
       ...formValues,
       id: itemId,
-      price: priceValue,
+      price: cleanOptions.length > 0 ? `Desde $${cleanOptions[0].price}` : priceValue,
       image: imageUrl,
       imagePublicId,
+      options: cleanOptions.length > 0 ? cleanOptions : undefined,
+      inventoryUsage:
+        cleanInventoryUsage.length > 0 ? cleanInventoryUsage : undefined,
     };
 
     let result;
@@ -190,6 +218,87 @@ function AdminMenuManager({
     }
 
     setIsSubmitting(false);
+  };
+
+  const handleAddOption = () => {
+    setFormValues((currentValues) => ({
+      ...currentValues,
+      options: [
+        ...currentValues.options,
+        {
+          tempId: crypto.randomUUID(),
+          id: "",
+          name: "",
+          price: "",
+        },
+      ],
+    }));
+  };
+
+  const handleOptionChange = (optionIndex, field, value) => {
+    setFormValues((currentValues) => ({
+      ...currentValues,
+      options: currentValues.options.map((option, index) =>
+        index === optionIndex
+          ? {
+              ...option,
+              [field]: value,
+            }
+          : option
+      ),
+    }));
+  };
+
+  const handleRemoveOption = (optionIndex) => {
+    setFormValues((currentValues) => ({
+      ...currentValues,
+      options: currentValues.options.filter((option, index) => {
+        return index !== optionIndex;
+      }),
+    }));
+  };
+
+  const handleAddInventoryUsage = () => {
+    const firstInventoryItem = inventoryItems[0];
+
+    if (!firstInventoryItem) {
+      return;
+    }
+
+    setFormValues((currentValues) => ({
+      ...currentValues,
+      inventoryUsage: [
+        ...currentValues.inventoryUsage,
+        {
+          tempId: crypto.randomUUID(),
+          inventoryId: firstInventoryItem.id,
+          amount: "",
+        },
+      ],
+    }));
+  };
+
+  const handleInventoryUsageChange = (usageIndex, field, value) => {
+    setFormValues((currentValues) => ({
+      ...currentValues,
+      inventoryUsage: currentValues.inventoryUsage.map((usage, index) =>
+        index === usageIndex
+          ? {
+              ...usage,
+              [field]: value,
+            }
+          : usage
+      ),
+    }));
+  };
+
+  const handleRemoveInventoryUsage = (usageIndex) => {
+    setFormValues((currentValues) => ({
+      ...currentValues,
+      inventoryUsage: currentValues.inventoryUsage.filter((usage, index) => {
+        return index !== usageIndex;
+      }),
+    }));
   };
 
   return (
@@ -287,6 +396,143 @@ function AdminMenuManager({
                 placeholder="Descripción breve del producto..."
               ></textarea>
             </label>
+
+            <section className="admin-menu__subsection admin-menu__field--wide">
+              <div className="admin-menu__subsection-header">
+                <div>
+                  <h4>Opciones del producto</h4>
+                  <p>
+                    Úsalo para productos como arroz o frijoles con tamaños/precios
+                    diferentes.
+                  </p>
+                </div>
+
+                <button
+                  className="button button--secondary"
+                  type="button"
+                  onClick={handleAddOption}
+                >
+                  Agregar opción
+                </button>
+              </div>
+
+              {formValues.options.length > 0 && (
+                <div className="admin-menu__nested-list">
+                  {formValues.options.map((option, index) => (
+                    <div className="admin-menu__nested-row" key={option.tempId}>
+                      <label className="admin-menu__field">
+                        <span>Nombre de opción</span>
+                        <input
+                          type="text"
+                          value={option.name}
+                          onChange={(event) =>
+                            handleOptionChange(index, "name", event.target.value)
+                          }
+                          placeholder="Ej. Chico"
+                        />
+                      </label>
+
+                      <label className="admin-menu__field">
+                        <span>Precio</span>
+                        <input
+                          type="number"
+                          min="0"
+                          value={option.price}
+                          onChange={(event) =>
+                            handleOptionChange(index, "price", event.target.value)
+                          }
+                          placeholder="20"
+                        />
+                      </label>
+
+                      <button
+                        className="admin-menu__remove-button"
+                        type="button"
+                        onClick={() => handleRemoveOption(index)}
+                      >
+                        Eliminar
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+            <section className="admin-menu__subsection admin-menu__field--wide">
+              <div className="admin-menu__subsection-header">
+                <div>
+                  <h4>Uso de inventario</h4>
+                  <p>
+                    Define qué inventario se descuenta cuando se vende este producto. Déjalo
+                    vacío para productos no rastreados.
+                  </p>
+                </div>
+
+                <button
+                  className="button button--secondary"
+                  type="button"
+                  onClick={handleAddInventoryUsage}
+                >
+                  Agregar inventario
+                </button>
+              </div>
+
+              {formValues.inventoryUsage.length > 0 && (
+                <div className="admin-menu__nested-list">
+                  {formValues.inventoryUsage.map((usage, index) => (
+                    <div
+                      className="admin-menu__nested-row"
+                      key={usage.tempId}
+                    >
+                      <label className="admin-menu__field">
+                        <span>Inventario</span>
+                        <select
+                          value={usage.inventoryId}
+                          onChange={(event) =>
+                            handleInventoryUsageChange(
+                              index,
+                              "inventoryId",
+                              event.target.value
+                            )
+                          }
+                        >
+                          {inventoryItems.map((inventoryItem) => (
+                            <option value={inventoryItem.id} key={inventoryItem.id}>
+                              {inventoryItem.name} ({inventoryItem.displayUnit})
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+
+                      <label className="admin-menu__field">
+                        <span>Cantidad a descontar</span>
+                        <input
+                          type="number"
+                          min="0"
+                          value={usage.amount}
+                          onChange={(event) =>
+                            handleInventoryUsageChange(index, "amount", event.target.value)
+                          }
+                          placeholder="Ej. 1"
+                        />
+                      </label>
+
+                      <button
+                        className="admin-menu__remove-button"
+                        type="button"
+                        onClick={() => handleRemoveInventoryUsage(index)}
+                      >
+                        Eliminar
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <p className="admin-menu__helper">
+                Referencia: pollo entero = 2 medios, medio pollo = 1 medio, 1 kg sirloin =
+                1000 gramos, 1/2 kg sirloin = 500 gramos.
+              </p>
+            </section>
 
             <div className="admin-menu__field admin-menu__field--wide">
               <span>Imagen del producto</span>

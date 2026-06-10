@@ -51,6 +51,7 @@ function AdminDashboardPage({
             return (
                 <AdminMenuManager
                     menuItems={menuItems}
+                    inventoryItems={inventoryItems}
                     onCreateMenuItem={onCreateMenuItem}
                     onUpdateMenuItem={onUpdateMenuItem}
                     onToggleMenuItemAvailability={onToggleMenuItemAvailability}
