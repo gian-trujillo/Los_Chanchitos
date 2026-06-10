@@ -1,9 +1,11 @@
 const errorHandler = (err, req, res, next) => {
+  void next;
+
   console.error(err);
 
   if (err.code === 11000) {
     return res.status(409).send({
-      message: "Ya existe un producto con ese identificador.",
+      message: "Ya existe un documento con ese identificador.",
       fields: err.keyValue,
     });
   }
@@ -22,8 +24,7 @@ const errorHandler = (err, req, res, next) => {
   }
 
   const statusCode = err.statusCode || 500;
-  const message =
-    statusCode === 500 ? "Error en el servidor" : err.message;
+  const message = statusCode === 500 ? "Error en el servidor" : err.message;
 
   return res.status(statusCode).send({
     message,
