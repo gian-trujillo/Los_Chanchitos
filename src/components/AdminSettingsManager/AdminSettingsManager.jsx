@@ -196,8 +196,12 @@ function AdminSettingsManager({ restaurantSettings, onUpdateRestaurantSettings }
         </section>
 
         <div className="admin-settings__actions">
-          <button className="button button--primary" type="submit">
-            Guardar configuración
+          <button
+            className="button button--primary"
+            type="submit"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Guardando..." : "Guardar configuración"}
           </button>
           <button className="button button--secondary" type="button" onClick={handleReset}>
             Descartar cambios
