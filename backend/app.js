@@ -15,9 +15,11 @@ const app = express();
 
 const server = http.createServer(app);
 
+const { PORT = 3000, FRONTEND_URL } = process.env;
+
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: FRONTEND_URL || "http://localhost:5173",
     credentials: true,
   },
 });
@@ -27,12 +29,31 @@ app.set("io", io);
 io.on("connection", (socket) => {
   console.log(`Socket connected: ${socket.id}`);
 
+  socket.on("order:join", (orderCode) => {
+    if (!orderCode) {
+      return;
+    }
+
+    const normalizedOrderCode = String(orderCode).trim().toUpperCase();
+
+    socket.join(`order:${normalizedOrderCode}`);
+  });
+
+  socket.on("order:leave", (orderCode) => {
+    if (!orderCode) {
+      return;
+    }
+
+    const normalizedOrderCode = String(orderCode).trim().toUpperCase();
+
+    socket.leave(`order:${normalizedOrderCode}`);
+  });
+
   socket.on("disconnect", () => {
     console.log(`Socket disconnected: ${socket.id}`);
   });
 });
 
-const { PORT = 3000, FRONTEND_URL } = process.env;
 
 connectDB();
 

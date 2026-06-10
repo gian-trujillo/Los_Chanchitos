@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { socket } from "../../utils/socket";
 import "./OrderStatusPage.css";
 import { getOrderStatus } from "../../utils/api";
 import { getOrderStatusStep } from "../../utils/orderStatus";
@@ -10,6 +11,30 @@ function OrderStatusPage({ onBackHome, onBackToMenu }) {
     });
     const [foundOrder, setFoundOrder] = useState(null);
     const [hasSearched, setHasSearched] = useState(false);
+
+    useEffect(() => {
+        if (!foundOrder?.code) {
+            return undefined;
+        }
+
+        socket.connect();
+        socket.emit("order:join", foundOrder.code);
+
+        const handleCustomerOrderUpdate = (updatedOrder) => {
+            if (updatedOrder.code !== foundOrder.code) {
+            return;
+            }
+
+            setFoundOrder(updatedOrder);
+        };
+
+        socket.on("customer-order:updated", handleCustomerOrderUpdate);
+
+        return () => {
+            socket.emit("order:leave", foundOrder.code);
+            socket.off("customer-order:updated", handleCustomerOrderUpdate);
+        };
+    }, [foundOrder?.code]);
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -37,22 +62,22 @@ function OrderStatusPage({ onBackHome, onBackToMenu }) {
         }
     };
 
-    const handleRefreshOrder = async () => {
-        if (!foundOrder) {
-            return;
-        }
+    // const handleRefreshOrder = async () => {
+    //     if (!foundOrder) {
+    //         return;
+    //     }
 
-        try {
-            const updatedOrder = await getOrderStatus({
-            code: foundOrder.code,
-            phone: foundOrder.customer.phone,
-            });
+    //     try {
+    //         const updatedOrder = await getOrderStatus({
+    //         code: foundOrder.code,
+    //         phone: foundOrder.customer.phone,
+    //         });
 
-            setFoundOrder(updatedOrder);
-        } catch {
-            setFoundOrder(null);
-        }
-    };
+    //         setFoundOrder(updatedOrder);
+    //     } catch {
+    //         setFoundOrder(null);
+    //     }
+    // };
 
     const formatPickupText = (order) => {
         if (order.pickup.type === "asap") {
@@ -168,15 +193,9 @@ function OrderStatusPage({ onBackHome, onBackToMenu }) {
                             {foundOrder.statusLabel}
                         </span>
 
-                        <button
-                        className="button button--secondary status-page__refresh"
-                        type="button"
-                        onClick={handleRefreshOrder}
-                        >
-                            Revisar si hay cambios
-                        </button>
                         <p className="status-page__refresh-note">
-                            El restaurante actualiza el estado conforme avanza tu pedido.
+                            Esta pantalla se actualiza automáticamente cuando el restaurante cambia el
+                            estado de tu pedido.
                         </p>
                     </div>
                 </div>

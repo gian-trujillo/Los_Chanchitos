@@ -278,6 +278,7 @@ const updateOrderStatus = async (req, res, next) => {
 
     if (io) {
       io.emit("order:updated", order);
+      io.to(`order:${order.code}`).emit("customer-order:updated", order);
     }
 
     return res.status(200).send(order);
