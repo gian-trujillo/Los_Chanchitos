@@ -5,11 +5,13 @@ const menuRoutes = require("./menuRoutes");
 const inventoryRoutes = require("./inventoryRoutes");
 const settingsRoutes = require("./settingsRoutes");
 const authRoutes = require("./authRoutes");
+const orderRoutes = require("./orderRoutes");
 
 router.use("/health", healthRoutes);
 router.use("/menu", menuRoutes);
 router.use("/inventory", inventoryRoutes);
 router.use("/settings", settingsRoutes);
 router.use("/auth", authRoutes);
+router.use("/orders", orderRoutes);
 
 module.exports = router;
