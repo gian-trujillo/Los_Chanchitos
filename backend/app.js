@@ -11,6 +11,7 @@ const rateLimit = require("express-rate-limit");
 const connectDB = require("./config/db");
 const routes = require("./routes");
 const errorHandler = require("./middlewares/errorHandler");
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const app = express();
 
@@ -81,7 +82,11 @@ app.use(
   })
 );
 
+app.use(requestLogger);
+
 app.use("/api", routes);
+
+app.use(errorLogger);
 
 app.use((req, res) => {
   res.status(404).send({
