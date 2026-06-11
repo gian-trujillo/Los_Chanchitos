@@ -7,10 +7,15 @@ const {
   deleteInventoryItem,
 } = require("../controllers/inventoryController");
 const auth = require("../middlewares/auth");
+const {
+  validateCreateInventoryItem,
+  validateUpdateInventoryItem,
+  validateInventoryItemId,
+} = require("../validations/inventoryValidations");
 
 router.get("/", getInventoryItems);
-router.post("/", auth, createInventoryItem);
-router.patch("/:id", auth, updateInventoryItem);
-router.delete("/:id", auth, deleteInventoryItem);
+router.post("/", auth, validateCreateInventoryItem, createInventoryItem);
+router.patch("/:id", auth, validateUpdateInventoryItem, updateInventoryItem);
+router.delete("/:id", auth, validateInventoryItemId, deleteInventoryItem);
 
 module.exports = router;

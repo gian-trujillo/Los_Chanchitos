@@ -15,10 +15,6 @@ function AdminOrdersManager({
   const [ordersError, setOrdersError] = useState("");
   const [isLoadingOrders, setIsLoadingOrders] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("active");
-  // const [newOrderNotice, setNewOrderNotice] = useState("");
-  // const [newOrderItems, setNewOrderItems] = useState([]);
-  // const knownOrderIdsRef = useRef(new Set());
-  // const hasLoadedOrdersRef = useRef(false);
 
   const statusFilters = [
     {
@@ -111,37 +107,6 @@ function AdminOrdersManager({
     return buttonText[status] || "";
   };
 
-  // const playNewOrderSound = () => {
-  //   try {
-  //     const AudioContext = window.AudioContext || window.webkitAudioContext;
-  //     const audioContext = new AudioContext();
-
-  //     const playBeep = (startTime, frequency) => {
-  //       const oscillator = audioContext.createOscillator();
-  //       const gainNode = audioContext.createGain();
-
-  //       oscillator.type = "sine";
-  //       oscillator.frequency.setValueAtTime(frequency, startTime);
-
-  //       gainNode.gain.setValueAtTime(0.0001, startTime);
-  //       gainNode.gain.exponentialRampToValueAtTime(0.22, startTime + 0.03);
-  //       gainNode.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.28);
-
-  //       oscillator.connect(gainNode);
-  //       gainNode.connect(audioContext.destination);
-
-  //       oscillator.start(startTime);
-  //       oscillator.stop(startTime + 0.3);
-  //     };
-
-  //     playBeep(audioContext.currentTime, 880);
-  //     playBeep(audioContext.currentTime + 0.38, 1040);
-  //   } catch (err) {
-  //     console.log(err);
-  //     // Some browsers block audio until the admin interacts with the page.
-  //   }
-  // };
-
   const loadOrders = async ({ showLoading = false } = {}) => {
     const token = getAdminToken();
 
@@ -162,10 +127,6 @@ function AdminOrdersManager({
       }
     }
   };
-
-  // useEffect(() => {
-  //   loadOrders({ showLoading: true });
-  // }, []);
 
   const handleChangeStatus = async (order, nextStatus) => {
     const token = getAdminToken();
@@ -268,35 +229,6 @@ function AdminOrdersManager({
           </button>
         </div>
       )}
-
-      {/* {newOrderNotice && (
-        <div className="admin-orders__new-notice">
-          <div>
-            <strong>{newOrderNotice}</strong>
-
-            {newOrderItems.length > 0 && (
-              <ul>
-                {newOrderItems.map((order) => (
-                  <li key={order._id}>
-                    {order.code} — {order.customer.name} — ${order.total} MXN
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-
-          <button
-            type="button"
-            onClick={() => {
-              setNewOrderNotice("");
-              setNewOrderItems([]);
-              setSelectedStatus("active");
-            }}
-          >
-            Ver pedidos
-          </button>
-        </div>
-      )} */}
 
       <div className="admin-orders__filters">
         {statusFilters.map((filter) => (

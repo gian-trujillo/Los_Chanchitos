@@ -1,5 +1,6 @@
 const http = require("http");
 const { Server } = require("socket.io");
+const { errors } = require("celebrate");
 require("dotenv").config();
 
 const express = require("express");
@@ -88,6 +89,8 @@ app.use((req, res) => {
   });
 });
 
+app.use(errors());
+app.use(errorHandler);
 app.use(errorHandler);
 
 server.listen(PORT, () => {

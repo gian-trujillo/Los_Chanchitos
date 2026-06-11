@@ -8,7 +8,6 @@ import AdminMenuManager from "../../components/AdminMenuManager/AdminMenuManager
 import AdminInventoryManager from "../../components/AdminInventoryManager/AdminInventoryManager";
 import AdminOrdersManager from "../../components/AdminOrdersManager/AdminOrdersManager";
 import AdminSettingsManager from "../../components/AdminSettingsManager/AdminSettingsManager";
-// import { menuItems } from "../../data/menuData";
 
 function AdminDashboardPage({
   adminUser,

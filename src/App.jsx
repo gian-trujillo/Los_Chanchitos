@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import "./App.css";
-// import { saveOrderToStorage } from "./utils/orderStorage";
 import { menuItems as initialMenuItems } from "./data/menuData";
 import { addInventoryStatusToMenuItems } from "./utils/inventoryUtils";
 import Header from "./components/Header/Header";
@@ -31,7 +30,6 @@ function App() {
   const [menuItems, setMenuItems] = useState(initialMenuItems);
   const [inventoryItems, setInventoryItems] = useState(initialInventoryItems);
   const [restaurantSettings, setRestaurantSettings] = useState(initialRestaurantSettings);
-  // const [isLoadingAppData, setIsLoadingAppData] = useState(true);
   const [appDataError, setAppDataError] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
@@ -319,42 +317,6 @@ function App() {
   const hasMainItem = cartItems.some(
     (item) => item.category === "Individuales" || item.category === "Paquetes"
   );
-
-  // const generateOrderCode = () => {
-  // const randomNumber = Math.floor(1000 + Math.random() * 9000);
-  //   return `LC-${randomNumber}`;
-  // };
-
-  // const reduceInventoryForOrder = (orderItems) => {
-  //   setInventoryItems((currentInventoryItems) =>
-  //     currentInventoryItems.map((inventoryItem) => {
-  //       const totalUsed = orderItems.reduce((total, orderItem) => {
-  //         if (!orderItem.inventoryUsage) {
-  //           return total;
-  //         }
-
-  //         const matchingUsage = orderItem.inventoryUsage.find(
-  //           (usage) => usage.inventoryId === inventoryItem.id
-  //         );
-
-  //         if (!matchingUsage) {
-  //           return total;
-  //         }
-
-  //         return total + matchingUsage.amount * orderItem.quantity;
-  //       }, 0);
-
-  //       if (totalUsed === 0) {
-  //         return inventoryItem;
-  //       }
-
-  //       return {
-  //         ...inventoryItem,
-  //         quantity: Math.max(0, inventoryItem.quantity - totalUsed),
-  //       };
-  //     })
-  //   );
-  // };
 
   const handleSubmitOrder = async (orderData) => {
     const orderPayload = {

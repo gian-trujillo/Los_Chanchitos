@@ -5,8 +5,9 @@ const {
   getCurrentAdmin,
 } = require("../controllers/authController");
 const auth = require("../middlewares/auth");
+const { validateLogin } = require("../validations/authValidations");
 
-router.post("/login", loginAdmin);
+router.post("/login", validateLogin, loginAdmin);
 router.get("/me", auth, getCurrentAdmin);
 
 module.exports = router;

@@ -62,23 +62,6 @@ function OrderStatusPage({ onBackHome, onBackToMenu }) {
         }
     };
 
-    // const handleRefreshOrder = async () => {
-    //     if (!foundOrder) {
-    //         return;
-    //     }
-
-    //     try {
-    //         const updatedOrder = await getOrderStatus({
-    //         code: foundOrder.code,
-    //         phone: foundOrder.customer.phone,
-    //         });
-
-    //         setFoundOrder(updatedOrder);
-    //     } catch {
-    //         setFoundOrder(null);
-    //     }
-    // };
-
     const formatPickupText = (order) => {
         if (order.pickup.type === "asap") {
         return "Lo antes posible";

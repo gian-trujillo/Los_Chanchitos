@@ -7,10 +7,15 @@ const {
   updateOrderStatus,
 } = require("../controllers/orderController");
 const auth = require("../middlewares/auth");
+const {
+  validateCreateOrder,
+  validateOrderStatusQuery,
+  validateUpdateOrderStatus,
+} = require("../validations/orderValidations");
 
-router.post("/", createOrder);
-router.get("/status", getOrderStatus);
+router.post("/", validateCreateOrder, createOrder);
+router.get("/status", validateOrderStatusQuery, getOrderStatus);
 router.get("/admin", auth, getAdminOrders);
-router.patch("/:id/status", auth, updateOrderStatus);
+router.patch("/:id/status", auth, validateUpdateOrderStatus, updateOrderStatus);
 
 module.exports = router;
