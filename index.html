@@ -1,11 +1,77 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Basic SEO -->
+    <title>Los Chanchitos | Comida, pedidos y sabores auténticos</title>
+    <meta
+      name="description"
+      content="Los Chanchitos ofrece pollos asados y sirloin deliciosos, pedidos en línea y una experiencia práctica para disfrutar tus platillos favoritos de forma rápida y sencilla."
+    />
+    <meta
+      name="keywords"
+      content="Los Chanchitos, restaurante, comida, pedidos en línea, menú, comida mexicana, comida rápida, antojitos, pedidos para llevar, pollos asados, pollo asado, carne asada"
+    />
+    <meta name="author" content="Los Chanchitos" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>los-chanchitos</title>
+
+    <!-- Robots create robots.txt -->
+    <meta name="robots" content="index, follow" />
+
+    <!-- Canonical URL Replace with your domain -->
+    <link rel="canonical" href="https://www.tu-dominio.com/" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+
+    <!-- Open Graph / Facebook / WhatsApp -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Los Chanchitos | Pollos Asados, pedidos y sabores auténticos" />
+    <meta
+      property="og:description"
+      content="Explora el menú de Los Chanchitos, realiza pedidos en línea y disfruta tus platillos favoritos de forma rápida y sencilla."
+    />
+    <meta property="og:url" content="https://www.tu-dominio.com/" />
+    <meta property="og:site_name" content="Los Chanchitos" />
+    <meta property="og:image" content="https://www.tu-dominio.com/og-image.png" />
+    <meta property="og:image:alt" content="Platillos y comida de Los Chanchitos" />
+    <meta property="og:locale" content="es_MX" />
+
+    <!-- Twitter / X Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Los Chanchitos | Comida, pedidos y sabores auténticos" />
+    <meta
+      name="twitter:description"
+      content="Explora el menú de Los Chanchitos, realiza pedidos en línea y disfruta tus platillos favoritos."
+    />
+    <meta name="twitter:image" content="https://www.tu-dominio.com/og-image.png" />
+    <meta name="twitter:image:alt" content="Platillos y comida de Los Chanchitos" />
+
+    <!-- Theme color for mobile browsers -->
+    <meta name="theme-color" content="#111111" />
+
+    <!-- Structured Data / Local Business Schema -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Restaurant",
+        "name": "Los Chanchitos",
+        "description": "Restaurante con pedidos en línea, menú digital y pollo asado preparados para disfrutar de forma rápida y sencilla.",
+        "url": "https://www.tu-dominio.com/",
+        "image": "https://www.tu-dominio.com/og-image.jpg",
+        "servesCuisine": ["Mexican", "Fast Food"],
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Tu ciudad",
+          "addressRegion": "Tu estado",
+          "addressCountry": "MX"
+        },
+        "priceRange": "$$"
+      }
+    </script>
   </head>
+
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>

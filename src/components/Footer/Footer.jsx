@@ -1,4 +1,5 @@
 import "./Footer.css";
+import instagram from "/instagram.png"
 
 function Footer({ onNavigateHome, onOrderClick, onStatusClick, onSectionClick }) {
 
@@ -26,6 +27,9 @@ function Footer({ onNavigateHome, onOrderClick, onStatusClick, onSectionClick })
           <button type="button" onClick={() => onSectionClick("ubicacion")}>
             Ubicación
           </button>
+
+          <a className="footer__link" href="https://instagram.com/loschanchitospollos" target="blank">
+          <img src={instagram} alt="icono de instagram de los chanchitos" /></a>
         </div>
       </div>
     </footer>

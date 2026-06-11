@@ -59,6 +59,11 @@
   transform: translateY(-5px);
 }
 
+.footer__link {
+  width: 25px;
+  height: 25px;
+}
+
 @media screen and (max-width: 640px) {
   .footer {
     padding: var(--space-6) var(--space-4);
@@ -67,9 +72,11 @@
   .footer__inner {
     align-items: flex-start;
     flex-direction: column;
+    /* justify-content: center; */
   }
 
   .footer__links {
     flex-direction: column;
+    align-items: flex-start;
   }
 }

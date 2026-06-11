@@ -21,7 +21,7 @@ const { PORT = 3000, FRONTEND_URL } = process.env;
 
 const io = new Server(server, {
   cors: {
-    origin: FRONTEND_URL || "http://localhost:5173",
+    origin: FRONTEND_URL || 'https://www.loschanchitos.masdiseno.com',
     credentials: true,
   },
 });
@@ -63,7 +63,7 @@ app.use(helmet());
 
 app.use(
   cors({
-    origin: FRONTEND_URL || "http://localhost:5173",
+    origin: FRONTEND_URL || 'https://www.loschanchitos.masdiseno.com',
     credentials: true,
   })
 );
