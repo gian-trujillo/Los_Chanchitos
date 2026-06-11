@@ -17,13 +17,27 @@ const app = express();
 
 const server = http.createServer(app);
 
-const { PORT = 3000, FRONTEND_URL } = process.env;
+const { PORT = 3000, FRONTEND_URL, FRONTEND_WWW_URL } = process.env;
+
+const allowedOrigins = [
+  FRONTEND_URL,
+  FRONTEND_WWW_URL,
+  "http://localhost:5173",
+].filter(Boolean);
+
+const corsOptions = {
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error(`Origen no permitido por CORS: ${origin}`));
+  },
+  credentials: true,
+};
 
 const io = new Server(server, {
-  cors: {
-    origin: FRONTEND_URL || 'https://www.loschanchitos.masdiseno.com',
-    credentials: true,
-  },
+  cors: corsOptions,
 });
 
 app.set("io", io);
@@ -61,12 +75,7 @@ connectDB();
 
 app.use(helmet());
 
-app.use(
-  cors({
-    origin: FRONTEND_URL || 'https://www.loschanchitos.masdiseno.com',
-    credentials: true,
-  })
-);
+app.use(cors(corsOptions));
 
 app.use(express.json());
 
@@ -95,7 +104,6 @@ app.use((req, res) => {
 });
 
 app.use(errors());
-app.use(errorHandler);
 app.use(errorHandler);
 
 server.listen(PORT, () => {
